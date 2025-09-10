@@ -1,0 +1,976 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin: -20px -20px 30px -20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 300;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+main {
+    max-width: 1200px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+}
+
+/* 섹션별 카드 스타일 */
+#tradingview-chart, #ai-stocks, #semiconductor-stocks, #selected-stock-analysis {
+    background: linear-gradient(145deg, #ffffff, #f0f2f5);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* TradingView 차트 특별 설정 */
+#tradingview-chart {
+    height: 600px; /* 고정 높이 설정 */
+    min-height: 600px;
+}
+
+#tradingview-chart .tradingview-widget-container {
+    height: 520px !important; /* 패딩 고려한 실제 차트 높이 */
+    width: 100% !important;
+}
+
+#tradingview_b4321 {
+    height: 480px !important; /* 저작권 텍스트 공간 확보 */
+    width: 100% !important;
+}
+
+/* 섹션 설명 스타일 */
+.section-description {
+    color: #666;
+    font-size: 14px;
+    margin: -10px 0 20px 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* 섹션 순서에 따른 스타일 기본 */
+section {
+    margin-bottom: 40px;
+}
+
+/* 섹션 제목 업데이트 */
+section h2 {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+/* 섹션 순서에 따른 강조 색상 */
+#tradingview-chart h2 { color: #667eea; }
+#selected-stock-analysis h2 { color: #28a745; }
+#ai-stocks h2 { color: #fd7e14; }
+#semiconductor-stocks h2 { color: #6f42c1; }
+#monthly-recommendations h2 { color: #dc3545; }
+    padding-bottom: 10px;
+    border-bottom: 3px solid #667eea;
+    display: inline-block;
+}
+
+#analysis {
+    display: block; /* Changed from flex */
+    margin-top: 20px;
+}
+
+#technical-analysis, #seasonal-analysis {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border-left: 5px solid #28a745;
+}
+
+#technical-analysis h3, #seasonal-analysis h3 {
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+#tradingview-chart {
+    height: 75vh; /* 60vh에서 75vh로 대폭 증가 */
+    max-height: 800px; /* 최대 높이도 대폭 증가 */
+    overflow: hidden;
+    position: relative;
+    margin-top: 0; /* 마진 제거 */
+    padding: 10px; /* 내부 여백 추가 */
+}
+
+/* TradingView 위젯 컨테이너 높이 제한 */
+.tradingview-widget-container {
+    height: 100% !important;
+    max-height: 750px !important; /* 더 높게 설정 */
+    min-height: 500px !important; /* 최소 높이 보장 */
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.analysis-result {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.analysis-result:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.analysis-result h4 {
+    margin-top: 0;
+    font-size: 1.1em;
+}
+
+.signal {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.signal-buy {
+    background-color: #28a745; /* Green */
+}
+
+.signal-sell {
+    background-color: #dc3545; /* Red */
+}
+
+/* Hold 신호 개선 - 더 잘 보이도록 */
+.signal:not(.signal-buy):not(.signal-sell) {
+    background-color: #6c757d; /* Gray background for Hold */
+    color: #fff;
+    border: 1px solid #495057;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.85em;
+    z-index: 1000;
+    pointer-events: none; /* Allows clicks to pass through to elements below */
+    opacity: 0; /* Default hidden state */
+    transition: opacity 0.3s ease-in-out; /* Smooth transition */
+    white-space: normal; /* Allow text wrapping for longer descriptions */
+    max-width: 300px;
+    line-height: 1.4;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border: 1px solid #555;
+}
+
+.stock-list-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center; /* Center the stock tickers */
+}
+
+.stock-ticker {
+    background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+    color: #1565c0;
+    padding: 10px 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+}
+
+.stock-ticker:hover {
+    background: linear-gradient(145deg, #bbdefb, #90caf9);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(21, 101, 192, 0.3);
+    border-color: #1565c0;
+}
+
+#selected-stock-analysis {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#selected-stock-details {
+    margin-top: 15px;
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.stock-header {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.stock-header h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 1.5em;
+}
+
+.stock-header .price-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.stock-header .current-price {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+}
+
+.stock-header .price-change {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.stock-header .price-change.positive {
+    color: #28a745;
+    background-color: #d4edda;
+}
+
+.stock-header .price-change.negative {
+    color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.stock-fundamentals {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: none;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-left: 4px solid #17a2b8;
+}
+
+.fundamentals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.fundamental-item {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.2s ease;
+    border: 1px solid rgba(23, 162, 184, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.fundamental-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(23, 162, 184, 0.15);
+}
+
+.fundamental-item .label {
+    font-size: 0.9em;
+    color: #17a2b8;
+    margin-bottom: 8px;
+    cursor: help;
+    border-bottom: 1px dotted #17a2b8;
+    font-weight: 600;
+}
+
+.fundamental-item .value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.stock-description {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.stock-description h4 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.stock-description p {
+    line-height: 1.6;
+    color: #555;
+}
+
+.stock-ticker.selected {
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    color: white;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+    border-color: #667eea;
+}
+
+/* Tooltip term styling */
+.tooltip-term {
+    cursor: help;
+    border-bottom: 1px dotted #666;
+    position: relative;
+}
+
+.tooltip-term:hover {
+    color: #007bff;
+    border-bottom-color: #007bff;
+}
+
+/* 상세 분석 스타일 */
+.score-item-detailed {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid #667eea;
+}
+
+.score-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.score-header .score-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.score-header .score-bar {
+    flex: 1;
+    height: 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    margin: 0 15px;
+    overflow: hidden;
+}
+
+.score-fill.technical {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+.score-fill.seasonal {
+    background: linear-gradient(90deg, #007bff, #6610f2);
+}
+
+.score-fill.fundamental {
+    background: linear-gradient(90deg, #fd7e14, #e83e8c);
+}
+
+.score-header .score-value {
+    font-weight: bold;
+    color: #495057;
+    min-width: 40px;
+    text-align: right;
+}
+
+.score-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #6c757d;
+}
+
+.score-details p {
+    margin: 8px 0;
+    line-height: 1.5;
+    font-size: 0.95em;
+    color: #495057;
+}
+
+.score-details strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* 기존 스타일 개선 */
+.analysis-section {
+    margin-bottom: 25px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-left: 4px solid #28a745;
+}
+
+.analysis-section h4 {
+    color: #28a745;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid #28a745;
+    padding-bottom: 8px;
+}
+
+.score-section {
+    margin-bottom: 25px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-left: 4px solid #667eea;
+}
+
+.score-section h4 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+}
+
+.score-display {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 12px;
+}
+
+.total-score-large .score-number {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.total-score-large .score-suffix {
+    font-size: 1.5em;
+    opacity: 0.8;
+}
+
+.recommendation-large {
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 25px;
+    display: inline-block;
+}
+
+/* AI 추천 섹션 스타일 추가 */
+#monthly-recommendations {
+    background: linear-gradient(145deg, #ffffff, #f0f2f5);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+#monthly-recommendations h2 {
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #667eea;
+    display: inline-block;
+}
+
+.recommendation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.recommendation-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-refresh {
+    background: linear-gradient(145deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+#sector-filter {
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    background: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.market-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.sentiment-card, .strategy-card {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.sentiment-card h3, .strategy-card h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.recommendation-card {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #007bff;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rank-badge {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.ticker-name {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #2c3e50;
+}
+
+.recommendation-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.strong-buy .recommendation-badge {
+    background-color: #28a745;
+    color: white;
+}
+
+.buy .recommendation-badge {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.hold .recommendation-badge {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.sell .recommendation-badge {
+    background-color: #dc3545;
+    color: white;
+}
+
+.score-section {
+    margin-bottom: 15px;
+}
+
+.total-score {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.score-label {
+    font-size: 0.9em;
+    color: #6c757d;
+    display: block;
+}
+
+.score-value {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.score-breakdown {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+}
+
+.score-item {
+    text-align: center;
+    flex: 1;
+}
+
+.score-item .tooltip-term {
+    font-size: 0.8em;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.score-item .score {
+    font-weight: bold;
+    color: #495057;
+}
+
+.reasons-section {
+    margin-bottom: 15px;
+}
+
+.reasons-title {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.reasons-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.reason-tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+}
+
+.card-footer {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-detail {
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Enhanced Technical Analysis Styling */
+.analysis-section {
+    margin-bottom: 20px;
+}
+
+.technical-summary {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.signal-box {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.confidence {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.confidence-high {
+    background-color: #28a745;
+    color: white;
+}
+
+.confidence-moderate {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.confidence-low {
+    background-color: #dc3545;
+    color: white;
+}
+
+.trend-strength {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.trend-strong {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.trend-moderate {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.trend-weak {
+    background-color: #6c757d;
+    color: white;
+}
+
+.indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.indicator-item {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+}
+
+.indicator-item .label {
+    display: block;
+    font-size: 0.85em;
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.indicator-item .value {
+    display: block;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #495057;
+}
+
+.bollinger-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+}
+
+.bollinger-section h5 {
+    margin: 0 0 15px 0;
+    color: #495057;
+}
+
+.bollinger-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.bollinger-item {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #ced4da;
+}
+
+.bollinger-item .label {
+    display: block;
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-bottom: 3px;
+}
+
+.bollinger-item .value {
+    display: block;
+    font-weight: bold;
+    color: #495057;
+}
+
+.signals-section {
+    background-color: #fff3cd;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+    margin: 20px 0;
+}
+
+.signals-section h5 {
+    margin: 0 0 10px 0;
+    color: #856404;
+}
+
+.signals-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.signals-list li {
+    padding: 5px 0;
+    color: #856404;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.analysis-conclusion {
+    background-color: #d1ecf1;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #17a2b8;
+    margin-top: 20px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #0c5460;
+}
+
+/* ===== TOOLTIP STYLES ===== */
+.tooltip-term {
+    cursor: help;
+    border-bottom: 1px dotted #007bff;
+    color: #007bff;
+    position: relative;
+    display: inline;
+}
+
+.tooltip-term:hover {
+    color: #0056b3;
+    border-bottom-color: #0056b3;
+}
+
+.tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10000;
+    opacity: 0;
+    display: none;
+    transition: opacity 0.2s ease;
+    word-wrap: break-word;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 20px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #333;
+}
+
+.tooltip.show {
+    opacity: 1;
+    display: block;
+}

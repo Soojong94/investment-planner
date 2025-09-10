@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주식 투자 보조 프로그램</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-recommendations.css">
+</head>
+
+<body>
+  <header>
+    <h1>주식 투자 보조 프로그램</h1>
+  </header>
+  <main>
+    <!-- 1. TradingView 차트 -->
+    <section id="tradingview-chart">
+      <h2>1. TradingView 차트</h2>
+      <p class="section-description">종목을 선택하면 자동으로 AI 분석이 시작됩니다</p>
+      <!-- TradingView Widget BEGIN -->
+      <div class="tradingview-widget-container" style="height:100%;width:100%">
+        <div id="tradingview_b4321" style="height:calc(100% - 32px);width:100%"></div>
+        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow"
+            target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+        <script type="text/javascript">
+          // TradingView 위젯 초기화 함수 (글로벌 스코프에 선언)
+          window.initTradingView = function () {
+            console.log('initTradingView called');
+
+            // 중복 생성 방지
+            if (window.myTradingViewWidget) {
+              console.log('TradingView widget already exists, skipping...');
+              return;
+            }
+
+            if (typeof TradingView !== 'undefined') {
+              try {
+                console.log('Creating TradingView widget...');
+                window.myTradingViewWidget = new TradingView.widget({
+                  "width": "100%",
+                  "height": 480,
+                  "symbol": "NASDAQ:SPY",
+                  "interval": "D",
+                  "timezone": "Etc/UTC",
+                  "theme": "light",
+                  "style": "1",
+                  "locale": "kr",
+                  "toolbar_bg": "#f1f3f6",
+                  "enable_publishing": false,
+                  "allow_symbol_change": true,
+                  "container_id": "tradingview_b4321",
+                  "onready": function () {
+                    console.log('TradingView widget onready callback triggered!');
+                    window.tradingViewWidgetReady = true;
+                    console.log('Widget object:', window.myTradingViewWidget);
+                    console.log('Widget methods:', Object.getOwnPropertyNames(window.myTradingViewWidget));
+
+                    // 위젯이 준비되었다는 사용자 정의 이벤트 발생
+                    window.dispatchEvent(new CustomEvent('tradingViewReady'));
+                    console.log('tradingViewReady event dispatched');
+                  }
+                });
+                console.log('TradingView widget created successfully:', window.myTradingViewWidget);
+
+                // 새로운 심볼 추적 시스템은 이미 시작됨
+                console.log('Symbol tracking system already started');
+              } catch (error) {
+                console.error('❌ Error creating TradingView widget:', error);
+              }
+            } else {
+              console.error('❌ TradingView library not available');
+            }
+          };
+
+          // 즉시 초기화 시도
+          console.log('🚀 Starting TradingView initialization...');
+          console.log('TradingView available:', typeof TradingView !== 'undefined');
+
+          if (typeof TradingView !== 'undefined') {
+            console.log('🚀 TradingView library already loaded, initializing immediately...');
+            window.initTradingView();
+          } else {
+            console.log('⏳ TradingView library not loaded yet, waiting...');
+            // 라이브러리 로드 대기
+            let attempts = 0;
+            const maxAttempts = 100; // 10초 대기
+
+            const checkLibrary = setInterval(() => {
+              attempts++;
+              console.log(`⏳ Checking TradingView library... attempt ${attempts}/${maxAttempts}`);
+
+              if (typeof TradingView !== 'undefined') {
+                clearInterval(checkLibrary);
+                console.log('✅ TradingView library loaded after', attempts, 'attempts');
+                window.initTradingView();
+              } else if (attempts >= maxAttempts) {
+                clearInterval(checkLibrary);
+                console.error('❌ TradingView library loading timeout after', attempts, 'attempts');
+              }
+            }, 100);
+          }
+
+          // 티커 추출 함수
+          function extractTickerFromSymbol(symbolName) {
+            if (!symbolName) return null;
+            // 'NASDAQ:AAPL' -> 'AAPL'
+            const parts = symbolName.split(':');
+            return parts.length > 1 ? parts[1] : parts[0];
+          }
+
+          // 글로벌 심볼 변경 감지 시스템
+          window.TradingViewSymbolTracker = {
+            currentSymbol: 'NASDAQ:SPY',
+            lastCheckedSymbol: '',
+            isChecking: false,
+
+            // 심볼 변경 시 호출될 함수
+            onSymbolChange: function (newSymbol) {
+              console.log('🎯 Symbol change detected:', this.currentSymbol, '->', newSymbol);
+              this.currentSymbol = newSymbol;
+
+              const ticker = extractTickerFromSymbol(newSymbol);
+              if (ticker) {
+                console.log('🎯 Triggering AI analysis for:', ticker);
+
+                // 노티피케이션
+                if (window.NotificationManager) {
+                  NotificationManager.show(`트레이딩뷰에서 ${ticker} 선택 - AI 분석 시작`, 'success');
+                }
+
+                // AI 분석 실행
+                if (window.StockDetailAnalyzer) {
+                  setTimeout(() => {
+                    StockDetailAnalyzer.analyzeStock(ticker);
+                  }, 1000);
+                }
+              }
+            },
+
+            // 수동으로 심볼 설정
+            setSymbol: function (symbol) {
+              if (symbol && symbol !== this.currentSymbol) {
+                this.onSymbolChange(symbol);
+              }
+            },
+
+            // 주기적 체크 시작
+            startChecking: function () {
+              if (this.isChecking) return;
+              this.isChecking = true;
+
+              // postMessage 리스너 설정
+              this.setupPostMessageListener();
+
+              // 주기적 체크
+              setInterval(() => {
+                this.checkForSymbolChange();
+              }, 2000); // 2초로 단축
+            },
+
+            // postMessage 리스너 설정
+            setupPostMessageListener: function () {
+              window.addEventListener('message', (event) => {
+                if (event.origin === 'https://s.tradingview.com') {
+                  try {
+                    // JSON 문자열 파싱
+                    let messageData = event.data;
+                    if (typeof messageData === 'string') {
+                      messageData = JSON.parse(messageData);
+                    }
+
+                    // quoteUpdate 메시지에서 심볼 추출
+                    if (messageData.name === 'quoteUpdate' && messageData.data) {
+                      const data = messageData.data;
+                      let symbol = null;
+
+                      // 다양한 필드에서 심볼 추출
+                      if (data.original_name) {
+                        // "BATS_DLY:AMZN" -> "AMZN"
+                        symbol = data.original_name.split(':').pop();
+                      } else if (data.short_name) {
+                        symbol = data.short_name;
+                      } else if (data.symbol) {
+                        symbol = data.symbol;
+                      }
+
+                      // 유효한 주식 심볼인지 확인
+                      if (symbol && typeof symbol === 'string' && /^[A-Z]{1,10}$/.test(symbol)) {
+                        const fullSymbol = `NASDAQ:${symbol}`;
+
+                        // 현재 심볼과 다른 경우만 처리
+                        if (fullSymbol !== this.currentSymbol) {
+                          console.log('🎯 QuoteUpdate symbol detected:', symbol, 'from', data.original_name || data.short_name);
+                          this.setSymbol(fullSymbol);
+                        }
+                      }
+                    }
+
+                    // 기타 심볼 변경 이벤트 처리
+                    else if (messageData.type === 'symbol-change' || messageData.action === 'symbol-change') {
+                      const symbol = messageData.symbol || messageData.value;
+                      if (symbol && /^[A-Z]{1,5}(:[A-Z]{1,10})?$/.test(symbol)) {
+                        console.log('🎯 Symbol change event detected:', symbol);
+                        const fullSymbol = symbol.includes(':') ? symbol : `NASDAQ:${symbol}`;
+                        this.setSymbol(fullSymbol);
+                      }
+                    }
+
+                  } catch (e) {
+                    // JSON 파싱 오류 - 무시
+                  }
+                }
+              });
+
+              console.log('PostMessage listener set up');
+            },
+
+            checkForSymbolChange: function () {
+              // 1. TradingView API 시도 (혹시 작동할 수 있음)
+              try {
+                if (window.myTradingViewWidget &&
+                  typeof window.myTradingViewWidget.chart === 'function') {
+                  const apiSymbol = window.myTradingViewWidget.chart().symbol();
+                  if (apiSymbol && apiSymbol !== this.currentSymbol) {
+                    console.log('🎯 Found symbol via API:', apiSymbol);
+                    this.onSymbolChange(apiSymbol);
+                    return;
+                  }
+                }
+              } catch (e) {
+                // API 사용 불가
+              }
+
+              // 2. iframe 내부 DOM 감지 (제한적이지만 시도)
+              try {
+                const iframe = document.querySelector('#tradingview_b4321 iframe');
+                if (iframe && iframe.contentDocument) {
+                  // iframe 내부에 접근 가능한 경우 (CORS 제한으로 보통 불가능)
+                  const symbolElements = iframe.contentDocument.querySelectorAll('.tv-symbol-header, [data-symbol]');
+                  for (let elem of symbolElements) {
+                    const text = elem.textContent?.trim();
+                    if (text && text !== this.currentSymbol) {
+                      console.log('🎯 Found symbol in iframe DOM:', text);
+                      this.setSymbol(text);
+                      return;
+                    }
+                  }
+                }
+              } catch (e) {
+                // CORS 오류 - 예상됨
+              }
+
+              // 3. 메인 페이지 DOM에서 TradingView 관련 요소 찾기
+              const selectors = [
+                // TradingView 위젯 관련
+                '[data-widget-type="advanced-chart"] [data-symbol]',
+                '.tradingview-widget-container [data-symbol]',
+                '.tv-embed-widget-wrapper [data-symbol]',
+
+                // 일반적인 심볼 표시 요소
+                '.tv-symbol-header__short-name',
+                '.tv-symbol-header__text',
+                '.tv-header__symbol',
+                '.symbol-name',
+                '.js-symbol-name',
+                '.tv-symbol-info__name',
+
+                // 차트 관련
+                '.chart-container [data-name="legend-source-item"]',
+                '.tv-widget-idea__symbol',
+
+                // 메타 정보
+                'meta[property="og:title"]',
+                'title'
+              ];
+
+              for (const selector of selectors) {
+                try {
+                  const elements = document.querySelectorAll(selector);
+                  for (let elem of elements) {
+                    let text = null;
+
+                    if (elem.tagName === 'META') {
+                      text = elem.getAttribute('content');
+                    } else if (elem.tagName === 'TITLE') {
+                      text = elem.textContent;
+                    } else {
+                      text = elem.textContent?.trim() || elem.dataset?.symbol || elem.getAttribute('data-symbol');
+                    }
+
+                    if (text && text.length >= 2) {
+                      // 심볼 패턴 매칭
+                      const symbolMatch = text.match(/([A-Z]{1,5}:)?([A-Z]{1,10})/);
+                      if (symbolMatch) {
+                        const symbol = symbolMatch[0];
+                        const fullSymbol = symbol.includes(':') ? symbol : `NASDAQ:${symbol}`;
+
+                        if (fullSymbol !== this.currentSymbol && fullSymbol.length > 5) {
+                          console.log('🎯 Found symbol in DOM:', fullSymbol, 'from', selector);
+                          this.onSymbolChange(fullSymbol);
+                          return;
+                        }
+                      }
+                    }
+                  }
+                } catch (e) {
+                  // 무시
+                }
+              }
+            }
+          };
+
+          // 심볼 감지 시작
+          console.log('🎯 Starting TradingView Symbol Tracker...');
+          window.TradingViewSymbolTracker.startChecking();
+
+          // 차트 매니저에서도 사용할 수 있도록 전역 함수 제공
+          window.setTradingViewSymbol = function (symbol) {
+            window.TradingViewSymbolTracker.setSymbol(symbol);
+          };
+
+          // DOM이 이미 로드되었다니 바로 초기화하거나, 라이브러리 로드를 기다림
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+              if (typeof TradingView !== 'undefined') {
+                initTradingView();
+              }
+            });
+          } else if (typeof TradingView !== 'undefined') {
+            initTradingView();
+          }
+        </script>
+      </div>
+      <!-- TradingView Widget END -->
+    </section>
+
+    <!-- 2. AI 분석 결과 -->
+    <section id="selected-stock-analysis">
+      <h2>2. AI 분석 결과</h2>
+      <p class="section-description">선택된 종목의 상세 AI 분석 결과가 여기에 표시됩니다</p>
+      <div id="selected-stock-header" class="stock-header">
+        <p>종목을 클릭하거나 상세 분석 버튼을 누르면 여기에 상세 분석이 표시됩니다.</p>
+      </div>
+      <div id="selected-stock-fundamentals" class="stock-fundamentals">
+        <!-- 기본 정보가 여기에 표시됩니다 -->
+      </div>
+      <div id="selected-stock-details" class="analysis-result">
+        <!-- 기술적 분석이 여기에 표시됩니다 -->
+      </div>
+      <div id="selected-stock-description" class="stock-description">
+        <!-- 회사 설명이 여기에 표시됩니다 -->
+      </div>
+    </section>
+
+    <!-- 3. AI 섹터 종목 -->
+    <section id="ai-stocks">
+      <h2>3. AI 섹터 종목</h2>
+      <p class="section-description">주요 AI 관련 기업들의 실시간 데이터와 간단 분석</p>
+      <div class="stock-list-grid">
+        <!-- AI stocks will be loaded here -->
+      </div>
+    </section>
+
+    <!-- 4. 반도체 섹터 종목 -->
+    <section id="semiconductor-stocks">
+      <h2>4. 반도체 섹터 종목</h2>
+      <p class="section-description">반도체 산업 주요 기업들의 실시간 데이터와 간단 분석</p>
+      <div class="stock-list-grid">
+        <!-- Semiconductor stocks will be loaded here -->
+      </div>
+    </section>
+
+    <!-- 5. AI 종목 추천 -->
+    <section id="monthly-recommendations">
+      <div class="recommendation-header">
+        <h2>5. 이번달 AI 종목 추천</h2>
+
+        <div class="recommendation-controls">
+          <button id="refresh-recommendations" class="btn-refresh">새로고침</button>
+          <select id="sector-filter">
+            <option value="all">전체</option>
+            <option value="ai">AI</option>
+            <option value="semiconductor">반도체</option>
+          </select>
+        </div>
+      </div>
+      <div id="recommendations-content">
+        <div class="loading-spinner">
+          <p>월별 추천 종목을 분석 중입니다...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Load scripts in dependency order -->
+  <script src="js/config.js"></script>
+  <script src="js/notification-manager.js"></script>
+  <script src="js/tooltip-manager.js"></script>
+  <script src="js/chart-manager.js"></script>
+  <script src="js/stock-analyzer.js"></script>
+  <script src="js/stock-selector.js"></script>
+  <script src="js/seasonal-analysis.js"></script>
+  <script src="js/recommendation-ui.js"></script>
+  <script src="js/stock-detail-analyzer.js"></script>
+  <script src="js/monthly-recommendation-manager.js"></script>
+  <script src="client.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자 보조 프로그램</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style-recommendations.css">
+    <style>
+        /* 개선된 스타일 */
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .retry-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .stock-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .stock-price-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .investment-score-summary {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .score-circle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #007bff;
+            border-radius: 50%;
+            background: #f8f9fa;
+        }
+        
+        .score-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .score-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .recommendation-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .recommendation {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .recommendation.strong-buy { background: #d4edda; color: #155724; }
+        .recommendation.buy { background: #d1ecf1; color: #0c5460; }
+        .recommendation.hold { background: #fff3cd; color: #856404; }
+        .recommendation.sell { background: #f8d7da; color: #721c24; }
+        .recommendation.strong-sell { background: #f5c6cb; color: #721c24; }
+        
+        .confidence {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .investment-score-detailed {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .score-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .score-label {
+            min-width: 80px;
+            font-weight: 500;
+        }
+        
+        .score-bar {
+            flex: 1;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .score-fill.technical { background: #007bff; }
+        .score-fill.fundamental { background: #28a745; }
+        .score-fill.seasonal { background: #ffc107; }
+        
+        .score-value {
+            min-width: 30px;
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .recommendation-summary {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .fundamentals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .fundamental-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .fundamental-item .label {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .fundamental-item .value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .technical-analysis-section {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .indicator-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .signal-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .signal-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .signal-buy { background: #d4edda; color: #155724; }
+        .signal-sell { background: #f8d7da; color: #721c24; }
+        .signal-hold { background: #fff3cd; color: #856404; }
+        
+        .confidence-badge, .trend-badge {
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .recommendations-container {
+            margin: 20px 0;
+        }
+        
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .category-button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-button.active,
+        .category-button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-item:hover {
+            background: #f8f9fa;
+            border-color: #007bff;
+        }
+        
+        .recommendation-rank {
+            min-width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        
+        .recommendation-details {
+            flex: 1;
+        }
+        
+        .ticker-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .ticker {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .recommendation-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .score-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .score-breakdown {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .recommendation-reason {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .analyze-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .analyze-button:hover {
+            background: #218838;
+        }
+        
+        .loading-placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 투자 보조 프로그램</h1>
+        <p>실시간 데이터 기반 스마트 투자 분석</p>
+    </header>
+
+    <main>
+        <!-- 1. TradingView 차트 -->
+        <section id="tradingview-chart">
+            <h2>📈 1. TradingView 차트</h2>
+            <p class="section-description">종목을 선택하면 자동으로 AI 분석이 시작됩니다</p>
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div id="tradingview_widget" style="height:480px;width:100%"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                    // TradingView 위젯 초기화
+                    function initTradingView() {
+                        if (typeof TradingView !== 'undefined') {
+                            new TradingView.widget({
+                                "width": "100%",
+                                "height": 480,
+                                "symbol": "NASDAQ:SPY",
+                                "interval": "D",
+                                "timezone": "Etc/UTC",
+                                "theme": "light",
+                                "style": "1",
+                                "locale": "kr",
+                                "toolbar_bg": "#f1f3f6",
+                                "enable_publishing": false,
+                                "allow_symbol_change": true,
+                                "container_id": "tradingview_widget",
+                                "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies"],
+                                "show_popup_button": true,
+                                "popup_width": "1000",
+                                "popup_height": "650"
+                            });
+                        }
+                    }
+                    
+                    // DOM 로드 후 위젯 초기화
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initTradingView);
+                    } else {
+                        initTradingView();
+                    }
+                </script>
+            </div>
+        </section>
+
+        <!-- 2. 종목 선택 -->
+        <section id="stock-selection">
+            <h2>📊 2. 종목 선택</h2>
+            
+            <!-- AI 종목 -->
+            <div id="ai-stocks" class="stock-category">
+                <h3>🤖 AI 관련 종목</h3>
+                <div class="stock-list-grid" id="ai-stocks-grid">
+                    <span class="stock-ticker" data-ticker="NVDA">NVDA</span>
+                    <span class="stock-ticker" data-ticker="MSFT">MSFT</span>
+                    <span class="stock-ticker" data-ticker="GOOG">GOOG</span>
+                    <span class="stock-ticker" data-ticker="META">META</span>
+                    <span class="stock-ticker" data-ticker="AAPL">AAPL</span>
+                    <span class="stock-ticker" data-ticker="TSLA">TSLA</span>
+                    <span class="stock-ticker" data-ticker="AMD">AMD</span>
+                    <span class="stock-ticker" data-ticker="PLTR">PLTR</span>
+                    <span class="stock-ticker" data-ticker="AVGO">AVGO</span>
+                    <span class="stock-ticker" data-ticker="AMZN">AMZN</span>
+                </div>
+            </div>
+
+            <!-- 반도체 종목 -->
+            <div id="semiconductor-stocks" class="stock-category">
+                <h3>💾 반도체 종목</h3>
+                <div class="stock-list-grid" id="semiconductor-stocks-grid">
+                    <span class="stock-ticker" data-ticker="TSM">TSM</span>
+                    <span class="stock-ticker" data-ticker="ASML">ASML</span>
+                    <span class="stock-ticker" data-ticker="QCOM">QCOM</span>
+                    <span class="stock-ticker" data-ticker="AMAT">AMAT</span>
+                    <span class="stock-ticker" data-ticker="INTC">INTC</span>
+                    <span class="stock-ticker" data-ticker="MU">MU</span>
+                    <span class="stock-ticker" data-ticker="ADI">ADI</span>
+                    <span class="stock-ticker" data-ticker="MRVL">MRVL</span>
+                    <span class="stock-ticker" data-ticker="ARM">ARM</span>
+                    <span class="stock-ticker" data-ticker="TXN">TXN</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. AI 종목 추천 -->
+        <section id="monthly-recommendations">
+            <h2>🎯 3. AI 종목 추천 (이번 달)</h2>
+            <div class="recommendations-container">
+                <div class="category-selector">
+                    <button class="category-button active" data-category="all">전체</button>
+                    <button class="category-button" data-category="ai">AI</button>
+                    <button class="category-button" data-category="semiconductor">반도체</button>
+                    <button class="category-button" data-category="popular">인기종목</button>
+                </div>
+                <div id="monthly-recommendations-content">
+                    <div class="loading-placeholder">추천 종목을 분석하는 중입니다...</div>
+                </div>
+                <button id="generate-recommendations" class="generate-button">🔄 추천 종목 새로 생성</button>
+            </div>
+        </section>
+
+        <!-- 4. 선택된 종목 상세 분석 -->
+        <section id="selected-stock-analysis">
+            <h2>🔍 4. 선택된 종목 상세 분석</h2>
+            
+            <div id="selected-stock-header">
+                <h3>종목을 선택해주세요</h3>
+                <p>위에서 종목을 클릭하거나 추천 목록에서 선택하면 상세 분석이 표시됩니다.</p>
+            </div>
+
+            <div id="selected-stock-fundamentals">
+                <!-- 펀더멘털 정보가 여기에 표시됩니다 -->
+            </div>
+
+            <div id="selected-stock-details">
+                <!-- 기술적 분석 및 점수가 여기에 표시됩니다 -->
+            </div>
+
+            <div id="selected-stock-description">
+                <!-- 회사 설명이 여기에 표시됩니다 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript 모듈 로드 -->
+    <script src="investment-analyzer.js"></script>
+    <script src="stock-recommendation-system.js"></script>
+    <script src="improved-stock-analyzer.js"></script>
+    
+    <script>
+        // 전역 객체 초기화
+        let analyzer, recommendationSystem, improvedAnalyzer;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 투자 보조 프로그램 초기화 시작');
+            
+            // 시스템 초기화
+            analyzer = new InvestmentAnalyzer();
+            recommendationSystem = new StockRecommendationSystem();
+            improvedAnalyzer = new ImprovedStockAnalyzer();
+            
+            // 전역 참조 설정
+            window.analyzer = analyzer;
+            window.recommendationSystem = recommendationSystem;
+            window.improvedAnalyzer = improvedAnalyzer;
+            
+            // 이벤트 리스너 설정
+            setupEventListeners();
+            
+            // 초기 추천 생성
+            generateInitialRecommendations();
+            
+            console.log('✅ 시스템 초기화 완료');
+        });
+
+        function setupEventListeners() {
+            // 종목 클릭 이벤트
+            document.querySelectorAll('.stock-ticker').forEach(ticker => {
+                ticker.addEventListener('click', function() {
+                    const symbol = this.dataset.ticker;
+                    selectStock(symbol, this);
+                });
+            });
+
+            // 카테고리 선택 이벤트
+            document.querySelectorAll('.category-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    selectCategory(category, this);
+                });
+            });
+
+            // 추천 생성 버튼
+            const generateButton = document.getElementById('generate-recommendations');
+            if (generateButton) {
+                generateButton.addEventListener('click', function() {
+                    const activeCategory = document.querySelector('.category-button.active')?.dataset.category || 'all';
+                    generateRecommendations(activeCategory);
+                });
+            }
+        }
+
+        async function selectStock(ticker, element) {
+            console.log(`종목 선택: ${ticker}`);
+            
+            // 선택 상태 업데이트
+            document.querySelectorAll('.stock-ticker').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            // TradingView 차트 업데이트 (실제 구현 시 필요)
+            updateTradingViewChart(ticker);
+            
+            // 상세 분석 실행
+            await improvedAnalyzer.analyzeStock(ticker);
+        }
+
+        function selectCategory(category, element) {
+            console.log(`카테고리 선택: ${category}`);
+            
+            // 버튼 상태 업데이트
+            document.querySelectorAll('.category-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // 추천 생성
+            generateRecommendations(category);
+        }
+
+        async function generateInitialRecommendations() {
+            try {
+                console.log('초기 추천 종목 생성 중...');
+                const recommendations = await recommendationSystem.generateMonthlyRecommendations('popular');
+                recommendationSystem.displayRecommendations(recommendations);
+            } catch (error) {
+                console.error('초기 추천 생성 실패:', error);
+                document.getElementById('monthly-recommendations-content').innerHTML = 
+                    '<div class="error-message">추천 종목 생성 중 오류가 발생했습니다.</div>';
+            }
+        }
+
+        async function generateRecommendations(category = 'all') {
+            try {
+                console.log(`${category} 카테고리 추천 생성 중...`);
+                
+                // 로딩 상태 표시
+                document.getElementById('monthly-recommendations-content').innerHTML = 
+                    '<div class="loading-placeholder">추천 종목을 분석하는 중입니다...</div>';
+                
+                const recommendations = await recommendationSystem.generateMonthlyRecommendations(category);
+                recommendationSystem.displayRecommendations(recommendations);
+                
+            } catch (error) {
+                console.error('추천 생성 실패:', error);
+                document.getElementById('monthly-recommendations-content').innerHTML = 
+                    '<div class="error-message">추천 종목 생성 중 오류가 발생했습니다.</div>';
+            }
+        }
+
+        function updateTradingViewChart(ticker) {
+            // TradingView 차트 업데이트 로직
+            // 실제 구현에서는 TradingView API를 사용하여 차트 심볼 변경
+            console.log(`TradingView 차트 업데이트: ${ticker}`);
+        }
+
+        // 전역 함수로 추천 아이템 클릭 처리
+        window.selectStock = selectStock;
+    </script>
+</body>
+</html>

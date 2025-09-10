@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자 보조 프로그램 - 시스템 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            background: white;
+            border-left: 4px solid #3498db;
+        }
+        .error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        .success {
+            border-left-color: #27ae60;
+            background: #f2fdf2;
+        }
+        .loading {
+            color: #f39c12;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 투자 보조 프로그램 시스템 테스트</h1>
+        
+        <div class="test-section">
+            <h3>1. API 연결 테스트</h3>
+            <button class="test-button" onclick="testApiConnection()">API 연결 확인</button>
+            <div id="api-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 단일 종목 분석 테스트</h3>
+            <button class="test-button" onclick="testSingleStock('NVDA')">NVDA 분석</button>
+            <button class="test-button" onclick="testSingleStock('AAPL')">AAPL 분석</button>
+            <button class="test-button" onclick="testSingleStock('TSLA')">TSLA 분석</button>
+            <div id="single-stock-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 월별 추천 시스템 테스트</h3>
+            <button class="test-button" onclick="testMonthlyRecommendations('ai')">AI 종목 추천</button>
+            <button class="test-button" onclick="testMonthlyRecommendations('semiconductor')">반도체 추천</button>
+            <button class="test-button" onclick="testMonthlyRecommendations('popular')">인기 종목 추천</button>
+            <div id="monthly-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 오류 처리 테스트</h3>
+            <button class="test-button" onclick="testErrorHandling()">잘못된 종목 테스트</button>
+            <div id="error-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. 성능 테스트</h3>
+            <button class="test-button" onclick="performanceTest()">다중 종목 동시 분석</button>
+            <div id="performance-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // API 연결 테스트
+        async function testApiConnection() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">API 연결을 확인하는 중...</span>';
+            
+            try {
+                const endpoints = [
+                    '/api/quote/AAPL',
+                    '/api/analysis/AAPL', 
+                    '/api/score/AAPL',
+                    '/api/recommendations/monthly?category=popular'
+                ];
+                
+                const results = await Promise.all(
+                    endpoints.map(async (endpoint) => {
+                        const response = await fetch(endpoint);
+                        return {
+                            endpoint,
+                            status: response.status,
+                            ok: response.ok
+                        };
+                    })
+                );
+                
+                let html = '<div class="success">✅ API 연결 테스트 완료</div><pre>';
+                results.forEach(result => {
+                    html += `${result.endpoint}: ${result.ok ? '✅ OK' : '❌ FAIL'} (${result.status})\\n`;
+                });
+                html += '</pre>';
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ API 연결 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 단일 종목 분석 테스트
+        async function testSingleStock(ticker) {
+            const resultDiv = document.getElementById('single-stock-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<span class="loading">${ticker} 분석 중...</span>`;
+            
+            try {
+                const [quoteRes, analysisRes, scoreRes] = await Promise.all([
+                    fetch(`/api/quote/${ticker}`),
+                    fetch(`/api/analysis/${ticker}`),
+                    fetch(`/api/score/${ticker}`)
+                ]);
+                
+                const [quote, analysis, score] = await Promise.all([
+                    quoteRes.json(),
+                    analysisRes.json(),
+                    scoreRes.json()
+                ]);
+                
+                let html = `<div class="success">✅ ${ticker} 분석 완료</div><pre>`;
+                html += `현재가: $${quote.currentPrice || 'N/A'}\\n`;
+                html += `변동률: ${quote.changePercent || 'N/A'}%\\n`;
+                html += `매매신호: ${analysis.signal || 'N/A'}\\n`;
+                html += `RSI: ${analysis.rsi || 'N/A'}\\n`;
+                html += `종합점수: ${score.totalScore ? (score.totalScore * 100).toFixed(0) : 'N/A'}/100\\n`;
+                html += `추천: ${score.recommendation || 'N/A'}\\n`;
+                html += '</pre>';
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ ${ticker} 분석 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 월별 추천 테스트
+        async function testMonthlyRecommendations(category) {
+            const resultDiv = document.getElementById('monthly-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<span class="loading">${category} 카테고리 추천 생성 중...</span>`;
+            
+            try {
+                const response = await fetch(`/api/recommendations/monthly?category=${category}`);
+                const data = await response.json();
+                
+                let html = `<div class="success">✅ ${data.month} ${category} 추천 완료</div><pre>`;
+                html += `분석된 종목 수: ${data.totalAnalyzed}\\n`;
+                html += `추천 종목:\\n`;
+                
+                data.recommendations.forEach((stock, index) => {
+                    html += `${index + 1}. ${stock.ticker} - ${(stock.totalScore * 100).toFixed(0)}점 (${stock.recommendation})\\n`;
+                });
+                
+                html += '</pre>';
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 추천 생성 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 오류 처리 테스트
+        async function testErrorHandling() {
+            const resultDiv = document.getElementById('error-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">오류 처리 테스트 중...</span>';
+            
+            try {
+                // 존재하지 않는 종목으로 테스트
+                const response = await fetch('/api/score/INVALID_TICKER');
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = '<div class="success">✅ 오류 처리 정상 작동</div><pre>잘못된 종목에 대해 적절한 오류 메시지 반환</pre>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">⚠️ 오류 처리 확인 필요</div>';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="success">✅ 네트워크 오류 처리 정상</div><pre>예상된 네트워크 오류: ${error.message}</pre>`;
+            }
+        }
+
+        // 성능 테스트
+        async function performanceTest() {
+            const resultDiv = document.getElementById('performance-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">성능 테스트 중... (약 30초 소요)</span>';
+            
+            const startTime = Date.now();
+            const tickers = ['NVDA', 'AAPL', 'MSFT', 'GOOG', 'TSLA'];
+            
+            try {
+                const promises = tickers.map(ticker => 
+                    fetch(`/api/score/${ticker}`).then(res => res.json())
+                );
+                
+                const results = await Promise.all(promises);
+                const endTime = Date.now();
+                const duration = ((endTime - startTime) / 1000).toFixed(2);
+                
+                let html = `<div class="success">✅ 성능 테스트 완료</div><pre>`;
+                html += `실행 시간: ${duration}초\\n`;
+                html += `성공한 분석: ${results.filter(r => !r.error).length}/${tickers.length}\\n`;
+                html += `평균 응답 시간: ${(duration / tickers.length).toFixed(2)}초/종목\\n`;
+                html += '</pre>';
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 성능 테스트 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 페이지 로드 시 자동 API 연결 테스트
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 투자 보조 프로그램 테스트 페이지 로드됨');
+            setTimeout(testApiConnection, 1000);
+        });
+    </script>
+</body>
+</html>

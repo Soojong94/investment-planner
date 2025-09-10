@@ -1,0 +1,693 @@
+/* Monthly Recommendation System Styles */
+
+/* 추천 섹션 메인 컨테이너 */
+#monthly-recommendations {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 추천 헤더 */
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.recommendation-header h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.recommendation-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-refresh {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.btn-refresh:hover {
+  background: #0056b3;
+}
+
+#sector-filter {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+}
+
+/* 시장 개요 섹션 */
+.market-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sentiment-card, .strategy-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #007bff;
+}
+
+.sentiment-card h3, .strategy-card h3 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+/* 센티멘트 표시 */
+.sentiment-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.sentiment-positive {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.sentiment-negative {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.sentiment-neutral {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.sentiment-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.confidence-score {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.sentiment-recommendation {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #495057;
+}
+
+.mock-notice {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* 전략 카드 */
+.strategy-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.strategy-overview {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.top-pick {
+  color: #007bff;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.strategy-text {
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.risk-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.risk-label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.risk-value {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.risk-value.low {
+  background: #d4edda;
+  color: #155724;
+}
+
+.risk-value.medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.risk-value.high {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 추천 그리드 */
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* 추천 카드 */
+.recommendation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  border-left: 5px solid #6c757d;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.recommendation-card.strong-buy {
+  border-left-color: #28a745;
+}
+
+.recommendation-card.buy {
+  border-left-color: #007bff;
+}
+
+.recommendation-card.hold {
+  border-left-color: #ffc107;
+}
+
+.recommendation-card.sell {
+  border-left-color: #dc3545;
+}
+
+/* 카드 헤더 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.rank-badge {
+  background: #007bff;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.ticker-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.recommendation-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.strong-buy .recommendation-badge {
+  background: #d4edda;
+  color: #155724;
+}
+
+.buy .recommendation-badge {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.hold .recommendation-badge {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.sell .recommendation-badge {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 카드 본문 */
+.card-body {
+  padding: 1.25rem;
+}
+
+.score-section {
+  margin-bottom: 1rem;
+}
+
+.total-score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.score-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.score-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.score-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.score-item .score {
+  font-weight: bold;
+  color: #007bff;
+  margin-top: 0.25rem;
+}
+
+/* 이유 섹션 */
+.reasons-section {
+  margin-top: 1rem;
+}
+
+.reasons-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.reasons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reason-tag {
+  background: #e9ecef;
+  color: #495057;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* 카드 푸터 */
+.card-footer {
+  padding: 0.75rem 1.25rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-detail, .btn-score {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-detail {
+  background: #007bff;
+  color: white;
+}
+
+.btn-detail:hover {
+  background: #0056b3;
+}
+
+.btn-score {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-score:hover {
+  background: #545b62;
+}
+
+/* 섹터 헤더 */
+.sector-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #007bff;
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.sector-score {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* 점수 모달 */
+.score-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.score-detail {
+  margin-bottom: 1.5rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.score-bar {
+  position: relative;
+  width: 200px;
+  height: 20px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  background: #007bff;
+  transition: width 0.3s;
+}
+
+.score-fill.technical {
+  background: #28a745;
+}
+
+.score-fill.seasonal {
+  background: #ffc107;
+}
+
+.score-fill.fundamental {
+  background: #17a2b8;
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #495057;
+}
+
+.recommendation-detail {
+  text-align: center;
+}
+
+.recommendation-level {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 1rem;
+}
+
+/* 로딩 및 에러 상태 */
+.loading-placeholder, .error-placeholder, .no-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.error-placeholder {
+  color: #dc3545;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .market-overview {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendation-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .recommendation-controls {
+    justify-content: space-between;
+  }
+  
+  .card-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .score-breakdown {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  
+  .score-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .modal-content {
+    width: 95%;
+  }
+  
+  .score-bar {
+    width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  #monthly-recommendations {
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+  
+  .recommendation-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .sentiment-card, .strategy-card {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* AI 상태 표시 */
+.ai-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  margin-left: 1rem;
+}
+
+.ai-status-indicator.connected {
+  background: #d4edda;
+  color: #155724;
+}
+
+.ai-status-indicator.disconnected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.ai-status-indicator.mock {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 추가 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendation-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.score-fill {
+  animation: fillBar 1s ease-out;
+}
+
+@keyframes fillBar {
+  from {
+    width: 0;
+  }
+}
+
+/* 툴팁 스타일 확장 */
+.tooltip-term[data-term] {
+  border-bottom: 1px dotted #007bff;
+  cursor: help;
+}
+
+/* 점수 색상 구분 */
+.score-value {
+  color: #28a745;
+}
+
+.score-value[data-score]:after {
+  content: attr(data-score);
+}
+
+/* 높은 점수 */
+.recommendation-card[data-score-range="high"] .score-value {
+  color: #28a745;
+}
+
+/* 중간 점수 */
+.recommendation-card[data-score-range="medium"] .score-value {
+  color: #ffc107;
+}
+
+/* 낮은 점수 */
+.recommendation-card[data-score-range="low"] .score-value {
+  color: #dc3545;
+}

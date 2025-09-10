@@ -1,15 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const yahooFinanceService = require('../services/yahooFinanceService');
-// const huggingFaceService = require('../services/ai/huggingFaceService'); // 기존 서비스
-const HuggingFaceDeepSeekService = require('../services/ai/simpleAIService'); // Hugging Face DeepSeek 서비스
+const HuggingFaceDeepSeekService = require('../services/ai/simpleAIService');
 const investmentRecommendationService = require('../services/investmentRecommendationService');
 
-// AI 서비스 인스턴스 생성
 const aiService = new HuggingFaceDeepSeekService();
 
-// Route to get historical data for a specific ticker
-// GET /api/historical/:ticker
 router.get('/historical/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -20,8 +16,6 @@ router.get('/historical/:ticker', async (req, res) => {
   }
 });
 
-// Route to get technical analysis for a specific ticker
-// GET /api/analysis/:ticker
 router.get('/analysis/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -32,10 +26,6 @@ router.get('/analysis/:ticker', async (req, res) => {
   }
 });
 
-// Route to get seasonal analysis for a specific ticker
-// GET /api/seasonal/:ticker
-// Route to get seasonal analysis for a specific ticker
-// GET /api/seasonal/:ticker
 router.get('/seasonal/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -46,7 +36,6 @@ router.get('/seasonal/:ticker', async (req, res) => {
   }
 });
 
-// Hardcoded lists of AI and Semiconductor stocks
 const aiStocks = [
   'NVDA', 'MSFT', 'GOOG', 'GOOGL', 'PLTR', 'AMD', 'AVGO', 'META', 'AAPL', 'TSLA',
   'CRWD', 'PANW', 'SNOW', 'SMCI', 'MRVL', 'AMZN', 'ADBE', 'NOW', 'ISRG', 'SNPS',
@@ -59,18 +48,14 @@ const semiconductorStocks = [
   'SWKS', 'MTSI', 'QRVO', 'RMBS', 'TSEM', 'CRUS', 'ALGM', 'PI', 'SMTC', 'SLAB'
 ];
 
-// Route to get AI stocks
 router.get('/stocks/ai', (req, res) => {
   res.json(aiStocks);
 });
 
-// Route to get Semiconductor stocks
 router.get('/stocks/semiconductor', (req, res) => {
   res.json(semiconductorStocks);
 });
 
-// Route to get company information for a specific ticker
-// GET /api/company-info/:ticker
 router.get('/company-info/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -81,8 +66,6 @@ router.get('/company-info/:ticker', async (req, res) => {
   }
 });
 
-// Route to get quote summary for a specific ticker
-// GET /api/quote/:ticker
 router.get('/quote/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -93,21 +76,6 @@ router.get('/quote/:ticker', async (req, res) => {
   }
 });
 
-// Route to get investment score for a specific ticker
-// GET /api/score/:ticker
-router.get('/score/:ticker', async (req, res) => {
-  try {
-    const ticker = req.params.ticker;
-    const score = await yahooFinanceService.calculateInvestmentScore(ticker);
-    res.json(score);
-  } catch (error) {
-    res.status(500).json({ message: 'Error calculating investment score', error: error.message });
-  }
-});
-
-// AI 관련 라우트 (개선된 안정적인 AI 서비스 사용)
-// Route to get AI-based market sentiment
-// GET /api/ai/sentiment
 router.get('/ai/sentiment', async (req, res) => {
   try {
     const sentiment = await aiService.analyzeSentiment('MARKET', {});
@@ -117,8 +85,6 @@ router.get('/ai/sentiment', async (req, res) => {
   }
 });
 
-// Route to get AI stock recommendations
-// GET /api/ai/recommendations
 router.get('/ai/recommendations', async (req, res) => {
   try {
     const tickers = req.query.tickers ? req.query.tickers.split(',') : ['AAPL', 'MSFT', 'NVDA'];
@@ -129,8 +95,6 @@ router.get('/ai/recommendations', async (req, res) => {
   }
 });
 
-// Route to check AI service status
-// GET /api/ai/status
 router.get('/ai/status', async (req, res) => {
   try {
     const status = await aiService.checkApiStatus();
@@ -142,13 +106,11 @@ router.get('/ai/status', async (req, res) => {
 
 // ===== 새로운 종합 추천 시스템 라우트 =====
 
-// Route to get monthly investment recommendations with enhanced scoring
-// GET /api/recommendations/monthly
 router.get('/recommendations/monthly', async (req, res) => {
   try {
     const category = req.query.category || 'all';
+    const currentMonth = new Date().getMonth();
     
-    // 종목 리스트 정의
     const stockLists = {
       ai: ['NVDA', 'MSFT', 'GOOG', 'META', 'AAPL', 'TSLA', 'AMD', 'PLTR', 'AVGO', 'AMZN'],
       semiconductor: ['TSM', 'ASML', 'QCOM', 'AMAT', 'INTC', 'MU', 'ADI', 'MRVL', 'ARM', 'TXN'],
@@ -162,13 +124,12 @@ router.get('/recommendations/monthly', async (req, res) => {
       stocksToAnalyze = stockLists[category] || stockLists.popular;
     }
     
-    // 분석 결과 수집
     const analyses = [];
     for (let i = 0; i < Math.min(stocksToAnalyze.length, 10); i += 3) {
       const batch = stocksToAnalyze.slice(i, i + 3);
       const batchPromises = batch.map(async (ticker) => {
         try {
-          const score = await yahooFinanceService.calculateInvestmentScore(ticker);
+          const score = await investmentRecommendationService.analyzeStockForMonth(ticker, currentMonth);
           return score;
         } catch (error) {
           console.error(`Error analyzing ${ticker}:`, error.message);
@@ -179,22 +140,20 @@ router.get('/recommendations/monthly', async (req, res) => {
       const batchResults = await Promise.all(batchPromises);
       analyses.push(...batchResults.filter(result => result && !result.error));
       
-      // 배치 간 지연
       if (i + 3 < stocksToAnalyze.length) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
     
-    // 점수순 정렬 및 상위 5개 선택
     const sortedRecommendations = analyses
       .sort((a, b) => b.totalScore - a.totalScore)
       .slice(0, 5);
     
     const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-    const currentMonth = monthNames[new Date().getMonth()];
+    const monthName = monthNames[currentMonth];
     
     res.json({
-      month: currentMonth,
+      month: monthName,
       category,
       totalAnalyzed: analyses.length,
       recommendations: sortedRecommendations,
@@ -206,8 +165,6 @@ router.get('/recommendations/monthly', async (req, res) => {
   }
 });
 
-// Route to get sector-specific recommendations
-// GET /api/recommendations/sector/:sector
 router.get('/recommendations/sector/:sector', async (req, res) => {
   try {
     const sector = req.params.sector;
@@ -218,8 +175,7 @@ router.get('/recommendations/sector/:sector', async (req, res) => {
   }
 });
 
-// Route to get comprehensive stock score
-// GET /api/score/:ticker
+// GET /api/score/:ticker (최신 통합 로직)
 router.get('/score/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -231,14 +187,10 @@ router.get('/score/:ticker', async (req, res) => {
   }
 });
 
-// Route to get enhanced AI recommendations with market data
-// GET /api/ai/recommendations/enhanced
 router.get('/ai/recommendations/enhanced', async (req, res) => {
   try {
-    // 시장 데이터 수집 (간단한 예시)
     const marketData = {
       timestamp: new Date().toISOString(),
-      // 실제로는 여기서 VIX, S&P 500 등의 데이터를 가져올 수 있음
     };
     
     const recommendations = await huggingFaceService.getStockRecommendations([], marketData);
@@ -248,13 +200,10 @@ router.get('/ai/recommendations/enhanced', async (req, res) => {
   }
 });
 
-// 새로운 DeepSeek 강화 시기적 분석 라우트
-// Route to get enhanced seasonal analysis for a specific ticker
-// GET /api/seasonal/enhanced/:ticker
 router.get('/seasonal/enhanced/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
-    const month = req.query.month ? parseInt(req.query.month) - 1 : null; // 1-12를 0-11로 변환
+    const month = req.query.month ? parseInt(req.query.month) - 1 : null;
     const seasonalAnalysisService = require('../services/seasonalAnalysisService');
     
     const analysis = await seasonalAnalysisService.getEnhancedSeasonalAnalysis(ticker, month);
@@ -264,8 +213,6 @@ router.get('/seasonal/enhanced/:ticker', async (req, res) => {
   }
 });
 
-// Route to get seasonal analysis for current month with AI insights
-// GET /api/seasonal/ai/:ticker
 router.get('/seasonal/ai/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
@@ -274,7 +221,6 @@ router.get('/seasonal/ai/:ticker', async (req, res) => {
     
     const analysis = await seasonalAnalysisService.getEnhancedSeasonalAnalysis(ticker, currentMonth);
     
-    // AI 인사이트만 추출하여 반환
     const aiInsights = {
       ticker: analysis.ticker,
       month: analysis.month,

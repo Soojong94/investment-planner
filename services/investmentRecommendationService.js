@@ -1,15 +1,18 @@
 // Investment Recommendation Service - 종합 투자 추천 시스템
 const yahooFinanceService = require('./yahooFinanceService');
-const huggingFaceService = require('./ai/huggingFaceService'); // Hugging Face DeepSeek 모델 사용
+const SimpleAIService = require('./ai/simpleAIService'); // AI 서비스 직접 사용
 const seasonalAnalysisService = require('./seasonalAnalysisService'); // 강화된 시기적 분석
+
+const aiService = new SimpleAIService(); // AI 서비스 인스턴스화
 
 class InvestmentRecommendationService {
   constructor() {
+    // 가중치 재조정 (총합 1.0)
     this.weights = {
-      technical: 0.4,      // 기술적 분석 가중치
-      seasonal: 0.3,       // 시기적 분석 가중치  
-      sentiment: 0.2,      // AI 센티멘트 가중치
-      fundamental: 0.1     // 기본적 분석 가중치
+      technical: 0.35,     // 기술적 분석
+      seasonal: 0.25,      // AI 강화 시기적 분석
+      sentiment: 0.2,      // AI 종목 센티멘트
+      fundamental: 0.2     // 기본적 분석
     };
   }
 
@@ -42,7 +45,7 @@ class InvestmentRecommendationService {
       const topRecommendations = sortedStocks.slice(0, 10);
       
       // AI 센티멘트 분석
-      const marketSentiment = await huggingFaceService.analyzeSentiment();
+      const marketSentiment = await aiService.analyzeSentiment('MARKET');
       
       return {
         month: monthNames[currentMonth],
@@ -59,31 +62,34 @@ class InvestmentRecommendationService {
     }
   }
 
-  // 종목별 월별 분석
+  // 종목별 월별 분석 (업그레이드된 최종 버전)
   async analyzeStockForMonth(ticker, month) {
     try {
-      console.log(`Analyzing ${ticker} for month ${month + 1}`);
+      console.log(`Analyzing ${ticker} for month ${month + 1} with unified logic...`);
       
-      // 병렬로 각종 분석 수행
-      const [technicalData, enhancedSeasonalData, quoteData] = await Promise.all([
+      // 병렬로 모든 분석 데이터 수집 (AI 센티멘트 포함)
+      const [technicalData, enhancedSeasonalData, quoteData, sentimentData] = await Promise.all([
         yahooFinanceService.getTechnicalAnalysis(ticker),
-        seasonalAnalysisService.getEnhancedSeasonalAnalysis(ticker, month), // DeepSeek 강화 시기적 분석
-        yahooFinanceService.getQuoteSummary(ticker)
+        seasonalAnalysisService.getEnhancedSeasonalAnalysis(ticker, month),
+        yahooFinanceService.getQuoteSummary(ticker),
+        aiService.analyzeSentiment(ticker) // 개별 종목 센티멘트 분석 추가
       ]);
 
       // 각 분석별 스코어 계산
       const technicalScore = this.calculateTechnicalScore(technicalData);
-      const seasonalScore = enhancedSeasonalData.seasonalScore || 0.5; // DeepSeek AI로 업그레이드된 시기적 점수 사용
+      const seasonalScore = enhancedSeasonalData.seasonalScore || 0.5;
       const fundamentalScore = this.calculateFundamentalScore(quoteData);
-      
-      // 가중평균으로 총점 계산
+      const sentimentScore = this.calculateSentimentScore(sentimentData); // 센티멘트 점수 계산
+
+      // 새로운 가중치로 총점 계산
       const totalScore = (
         technicalScore * this.weights.technical +
         seasonalScore * this.weights.seasonal +
-        fundamentalScore * this.weights.fundamental
+        fundamentalScore * this.weights.fundamental +
+        sentimentScore * this.weights.sentiment // 센티멘트 점수 반영
       );
 
-      const recommendation = this.generateStockRecommendation(totalScore, technicalData, enhancedSeasonalData);
+      const recommendation = this.generateStockRecommendation(totalScore);
       
       return {
         ticker,
@@ -91,19 +97,34 @@ class InvestmentRecommendationService {
         technicalScore,
         seasonalScore,
         fundamentalScore,
+        sentimentScore, // 반환값에 추가
         recommendation,
         details: {
           technical: technicalData,
-          seasonal: enhancedSeasonalData, // DeepSeek AI 강화 시기적 분석 결과
-          quote: quoteData
+          seasonal: enhancedSeasonalData,
+          quote: quoteData,
+          sentiment: sentimentData // 반환값에 추가
         },
-        reasons: this.generateReasons(technicalScore, seasonalScore, fundamentalScore, month),
-        seasonalInsights: enhancedSeasonalData // 추가 AI 인사이트
+        reasons: this.generateReasons(technicalScore, seasonalScore, fundamentalScore, sentimentScore, month),
+        seasonalInsights: enhancedSeasonalData
       };
     } catch (error) {
       console.error(`Error analyzing ${ticker}:`, error);
       return null;
     }
+  }
+
+  // AI 센티멘트 점수 계산 함수 (0-1)
+  calculateSentimentScore(sentimentData) {
+    if (!sentimentData || sentimentData.error) return 0.5;
+
+    let score = 0.5; // 중립
+    if (sentimentData.sentiment === 'positive') {
+      score = 0.7 + (sentimentData.confidence * 0.3); // 0.7 ~ 1.0
+    } else if (sentimentData.sentiment === 'negative') {
+      score = 0.3 - (sentimentData.confidence * 0.3); // 0.0 ~ 0.3
+    }
+    return Math.max(0, Math.min(1, score));
   }
 
   // 기술적 분석 스코어 (0-1)
@@ -144,47 +165,6 @@ class InvestmentRecommendationService {
     }
     
     return Math.max(0, Math.min(1, score));
-  }
-
-  // 시기적 분석 스코어 (0-1)
-  calculateSeasonalScore(seasonalData, currentMonth) {
-    if (!seasonalData || seasonalData.error) return 0.5;
-    
-    // 과거 데이터에서 현재 월의 성과 추출
-    const monthPerformance = this.extractMonthPerformance(seasonalData, currentMonth);
-    
-    if (monthPerformance === null) return 0.5;
-    
-    // 수익률을 0-1 스코어로 변환
-    // -10% ~ +10% 범위를 0-1로 매핑
-    const normalizedScore = (monthPerformance + 10) / 20;
-    return Math.max(0, Math.min(1, normalizedScore));
-  }
-
-  // 월별 성과 추출
-  extractMonthPerformance(seasonalData, month) {
-    try {
-      // bestMonth와 worstMonth에서 해당 월의 수익률 추출
-      const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", 
-                         "7월", "8월", "9월", "10월", "11월", "12월"];
-      const targetMonth = monthNames[month];
-      
-      // bestMonth 형태: "3월 (5.23%)" 
-      if (seasonalData.bestMonth && seasonalData.bestMonth.includes(targetMonth)) {
-        const match = seasonalData.bestMonth.match(/\(([+-]?\d+\.?\d*)%\)/);
-        return match ? parseFloat(match[1]) : 5; // 기본값 5%
-      }
-      
-      if (seasonalData.worstMonth && seasonalData.worstMonth.includes(targetMonth)) {
-        const match = seasonalData.worstMonth.match(/\(([+-]?\d+\.?\d*)%\)/);
-        return match ? parseFloat(match[1]) : -5; // 기본값 -5%
-      }
-      
-      return 0; // 중립
-    } catch (error) {
-      console.error('Error extracting month performance:', error);
-      return 0;
-    }
   }
 
   // 기본적 분석 스코어 (0-1)
@@ -229,7 +209,7 @@ class InvestmentRecommendationService {
   }
 
   // 종목 추천 생성
-  generateStockRecommendation(totalScore, technicalData, seasonalData) {
+  generateStockRecommendation(totalScore) {
     if (totalScore >= 0.7) {
       return '강력 추천';
     } else if (totalScore >= 0.6) {
@@ -241,29 +221,21 @@ class InvestmentRecommendationService {
     }
   }
 
-  // 추천 이유 생성
-  generateReasons(technicalScore, seasonalScore, fundamentalScore, month) {
+  // 추천 이유 생성 (센티멘트 추가)
+  generateReasons(technicalScore, seasonalScore, fundamentalScore, sentimentScore, month) {
     const reasons = [];
     const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", 
                        "7월", "8월", "9월", "10월", "11월", "12월"];
     
-    if (technicalScore > 0.6) {
-      reasons.push('기술적 지표 양호');
-    } else if (technicalScore < 0.4) {
-      reasons.push('기술적 지표 부정적');
-    }
-    
-    if (seasonalScore > 0.6) {
-      reasons.push(`${monthNames[month]} 계절적 강세`);
-    } else if (seasonalScore < 0.4) {
-      reasons.push(`${monthNames[month]} 계절적 약세`);
-    }
-    
-    if (fundamentalScore > 0.6) {
-      reasons.push('펀더멘털 건실');
-    } else if (fundamentalScore < 0.4) {
-      reasons.push('밸류에이션 부담');
-    }
+    if (technicalScore > 0.65) reasons.push('기술적 지표 양호');
+    if (seasonalScore > 0.65) reasons.push(`${monthNames[month]} 계절적 강세`);
+    if (fundamentalScore > 0.65) reasons.push('펀더멘털 건실');
+    if (sentimentScore > 0.65) reasons.push('AI 센티멘트 긍정적');
+
+    if (technicalScore < 0.4) reasons.push('기술적 지표 부정적');
+    if (seasonalScore < 0.4) reasons.push(`${monthNames[month]} 계절적 약세`);
+    if (fundamentalScore < 0.4) reasons.push('밸류에이션 부담');
+    if (sentimentScore < 0.4) reasons.push('AI 센티멘트 부정적');
     
     return reasons.length > 0 ? reasons : ['종합적 분석 결과'];
   }

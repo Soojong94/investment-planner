@@ -56,18 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // TradingView 준비 이벤트 리스너 추가
-  window.addEventListener('tradingViewReady', () => {
-    console.log('TradingView is ready, all components should be functional now');
-    
-    // 테스트를 위해 3초 후 자동 NVDA 분석 실행
-    setTimeout(() => {
-      if (window.StockDetailAnalyzer) {
-        console.log('Auto-testing with NVDA analysis...');
-        StockDetailAnalyzer.analyzeStock('NVDA');
-      }
-    }, 3000);
-  });
+  
   
   console.log('Client initialization completed');
 });

@@ -316,17 +316,14 @@ async function getCompanyInfo(ticker) {
     const result = await yahooFinance.quoteSummary(ticker, { modules: ['summaryProfile'] });
     const englishDescription = result.summaryProfile ? result.summaryProfile.longBusinessSummary : null;
     
-    // If no description available
     if (!englishDescription || englishDescription.trim() === '') {
       return '회사 설명을 사용할 수 없습니다.';
     }
     
-    // Try to translate to Korean
     try {
       console.log(`Translating description for ${ticker}...`);
       const translatedDescription = await translate(englishDescription, { to: 'ko' });
       
-      // Check if translation was successful (sometimes returns original text)
       if (translatedDescription && translatedDescription !== englishDescription) {
         console.log(`Translation successful for ${ticker}`);
         return translatedDescription;
@@ -377,228 +374,10 @@ async function getQuoteSummary(ticker) {
   }
 }
 
-async function calculateInvestmentScore(ticker) {
-  try {
-    // Get necessary data + AI analysis
-    const [technicalAnalysis, seasonalAnalysis, quoteSummary, aiAnalysis] = await Promise.all([
-      getTechnicalAnalysis(ticker),
-      getSeasonalAnalysis(ticker),
-      getQuoteSummary(ticker),
-      getAIAnalysis(ticker) // AI 분석 추가
-    ]);
-    
-    // Calculate individual scores
-    const technicalScore = calculateTechnicalScore(technicalAnalysis);
-    const seasonalScore = calculateSeasonalScore(seasonalAnalysis);
-    const fundamentalScore = calculateFundamentalScore(quoteSummary);
-    const aiScore = calculateAIScore(aiAnalysis); // AI 점수 추가
-    
-    // Weighted total score with AI included
-    const totalScore = (technicalScore * 0.3) + (seasonalScore * 0.25) + (fundamentalScore * 0.25) + (aiScore * 0.2);
-    
-    // Generate recommendation
-    let recommendation = 'Hold';
-    if (totalScore >= 0.75) {
-      recommendation = 'Strong Buy';
-    } else if (totalScore >= 0.65) {
-      recommendation = 'Buy';
-    } else if (totalScore <= 0.3) {
-      recommendation = 'Sell';
-    } else if (totalScore <= 0.4) {
-      recommendation = 'Weak Hold';
-    }
-    
-    // Generate reasons with AI insights
-    const reasons = [];
-    if (technicalScore >= 0.7) reasons.push('강력한 기술적 신호');
-    if (seasonalScore >= 0.7) reasons.push('유리한 시기적 요인');
-    if (fundamentalScore >= 0.7) reasons.push('탄탄한 기본기');
-    if (aiScore >= 0.7) reasons.push('AI 긍정적 분석'); // AI 추가
-    if (technicalScore <= 0.3) reasons.push('약한 기술적 신호');
-    if (seasonalScore <= 0.3) reasons.push('불리한 시기적 요인');
-    if (fundamentalScore <= 0.3) reasons.push('우려되는 밸류에이션');
-    if (aiScore <= 0.3) reasons.push('AI 부정적 전망'); // AI 추가
-    
-    return {
-      ticker,
-      totalScore,
-      technicalScore,
-      seasonalScore,
-      fundamentalScore,
-      aiScore, // AI 점수 포함
-      recommendation,
-      reasons,
-      details: {
-        technical: technicalAnalysis,
-        seasonal: seasonalAnalysis,
-        quote: quoteSummary,
-        ai: aiAnalysis // AI 분석 결과 포함
-      },
-      timestamp: new Date().toISOString()
-    };
-    
-  } catch (error) {
-    console.error(`Error calculating investment score for ${ticker}:`, error);
-    return {
-      ticker,
-      error: 'Error calculating investment score',
-      totalScore: 0.5,
-      technicalScore: 0.5,
-      seasonalScore: 0.5,
-      fundamentalScore: 0.5,
-      aiScore: 0.5, // AI 점수 기본값
-      recommendation: 'Hold',
-      reasons: ['데이터 분석 중 오류 발생'],
-      timestamp: new Date().toISOString()
-    };
-  }
-}
-
-// AI 분석 함수 추가
-async function getAIAnalysis(ticker) {
-  try {
-    // AI 서비스에 직접 접근 (임시)
-    const HuggingFaceService = require('./ai/simpleAIService');
-    const aiService = new HuggingFaceService();
-    
-    const sentiment = await aiService.analyzeSentiment(ticker);
-    return sentiment;
-  } catch (error) {
-    console.error(`AI analysis failed for ${ticker}:`, error.message);
-    return {
-      sentiment: 'neutral',
-      confidence: 0.5,
-      analysis: 'AI 분석을 사용할 수 없습니다.',
-      aiProvider: 'error'
-    };
-  }
-}
-
-// AI 점수 계산 함수 추가
-function calculateAIScore(aiAnalysis) {
-  if (!aiAnalysis || aiAnalysis.aiProvider === 'error') {
-    return 0.5; // 중립
-  }
-  
-  let score = 0.5; // 기본 점수
-  
-  // 센티멘트 기반 점수
-  if (aiAnalysis.sentiment === 'positive') {
-    score = 0.7 + (aiAnalysis.confidence * 0.3); // 0.7-1.0
-  } else if (aiAnalysis.sentiment === 'negative') {
-    score = 0.3 - (aiAnalysis.confidence * 0.3); // 0.0-0.3
-  } else {
-    score = 0.4 + (aiAnalysis.confidence * 0.2); // 0.4-0.6
-  }
-  
-  return Math.max(0, Math.min(1, score));
-}
-
-function calculateTechnicalScore(analysis) {
-  if (!analysis || analysis.error) return 0.5;
-  
-  let score = 0.5; // Base score
-  
-  // RSI scoring
-  if (analysis.rsi) {
-    const rsi = parseFloat(analysis.rsi);
-    if (rsi >= 30 && rsi <= 70) {
-      score += 0.1; // Neutral RSI is good
-    } else if (rsi < 30) {
-      score += 0.2; // Oversold - potential buy
-    } else {
-      score -= 0.1; // Overbought - caution
-    }
-  }
-  
-  // Signal scoring
-  if (analysis.signal === 'Buy') {
-    score += 0.3;
-  } else if (analysis.signal === 'Sell') {
-    score -= 0.3;
-  }
-  
-  // Trend strength scoring
-  if (analysis.trendStrength === 'Strong') {
-    score += 0.2;
-  } else if (analysis.trendStrength === 'Weak') {
-    score -= 0.1;
-  }
-  
-  return Math.max(0, Math.min(1, score));
-}
-
-function calculateSeasonalScore(analysis) {
-  if (!analysis || analysis.error) return 0.5;
-  
-  // Simple seasonal scoring based on current month
-  const currentMonth = new Date().getMonth() + 1;
-  
-  // Extract month number from bestMonth if available
-  if (analysis.bestMonth) {
-    const bestMonthMatch = analysis.bestMonth.match(/(\d+)/);
-    if (bestMonthMatch) {
-      const bestMonth = parseInt(bestMonthMatch[1]);
-      if (currentMonth === bestMonth) {
-        return 0.8; // High score for best month
-      } else if (Math.abs(currentMonth - bestMonth) <= 1) {
-        return 0.7; // Good score for adjacent months
-      }
-    }
-  }
-  
-  return 0.5; // Neutral score
-}
-
-function calculateFundamentalScore(quote) {
-  if (!quote || quote.error) return 0.5;
-  
-  let score = 0.5; // Base score
-  
-  // P/E ratio scoring
-  if (quote.peRatio && quote.peRatio !== 'N/A') {
-    const pe = parseFloat(quote.peRatio);
-    if (pe > 0 && pe < 15) {
-      score += 0.2; // Low P/E is good
-    } else if (pe >= 15 && pe <= 25) {
-      score += 0.1; // Reasonable P/E
-    } else if (pe > 35) {
-      score -= 0.1; // High P/E is concerning
-    }
-  }
-  
-  // Dividend yield scoring
-  if (quote.dividendYield && quote.dividendYield !== 'N/A') {
-    const dividend = parseFloat(quote.dividendYield);
-    if (dividend >= 2) {
-      score += 0.1; // Good dividend
-    }
-  }
-  
-  // 52-week position scoring
-  if (quote.currentPrice && quote.currentPrice !== 'N/A' && 
-      quote.fiftyTwoWeekHigh && quote.fiftyTwoWeekHigh !== 'N/A' && 
-      quote.fiftyTwoWeekLow && quote.fiftyTwoWeekLow !== 'N/A') {
-    const current = parseFloat(quote.currentPrice);
-    const high = parseFloat(quote.fiftyTwoWeekHigh);
-    const low = parseFloat(quote.fiftyTwoWeekLow);
-    const position = ((current - low) / (high - low)) * 100;
-    
-    if (position <= 30) {
-      score += 0.15; // Near 52-week low - potential value
-    } else if (position >= 70) {
-      score -= 0.05; // Near 52-week high - potential overvaluation
-    }
-  }
-  
-  return Math.max(0, Math.min(1, score));
-}
-
 module.exports = {
   getHistoricalData,
   getTechnicalAnalysis,
   getSeasonalAnalysis,
   getCompanyInfo,
   getQuoteSummary,
-  calculateInvestmentScore,
 };

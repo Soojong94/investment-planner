@@ -99,27 +99,27 @@ const StockDetailAnalyzer = {
       fundamentalsDiv.innerHTML = `
         <div class="fundamental-grid">
           <div class="fundamental-item">
-            <span class="label">P/E 비율:</span>
+            <span class="label tooltip-term" data-term="P/E 비율">P/E 비율:</span>
             <span class="value">${quote.peRatio || 'N/A'}</span>
           </div>
           <div class="fundamental-item">
-            <span class="label">시가총액:</span>
+            <span class="label tooltip-term" data-term="시가총액">시가총액:</span>
             <span class="value">${quote.marketCap ? this.formatMarketCap(quote.marketCap) : 'N/A'}</span>
           </div>
           <div class="fundamental-item">
-            <span class="label">52주 고가:</span>
-            <span class="value">$${quote.fiftyTwoWeekHigh || 'N/A'}</span>
+            <span class="label tooltip-term" data-term="52주 최고가">52주 고가:</span>
+            <span class="value">${quote.fiftyTwoWeekHigh || 'N/A'}</span>
           </div>
           <div class="fundamental-item">
-            <span class="label">52주 저가:</span>
-            <span class="value">$${quote.fiftyTwoWeekLow || 'N/A'}</span>
+            <span class="label tooltip-term" data-term="52주 최저가">52주 저가:</span>
+            <span class="value">${quote.fiftyTwoWeekLow || 'N/A'}</span>
           </div>
           <div class="fundamental-item">
-            <span class="label">거래량:</span>
+            <span class="label tooltip-term" data-term="거래량">거래량:</span>
             <span class="value">${quote.volume ? this.formatVolume(quote.volume) : 'N/A'}</span>
           </div>
           <div class="fundamental-item">
-            <span class="label">배당수익률:</span>
+            <span class="label tooltip-term" data-term="배당수익률">배당수익률:</span>
             <span class="value">${quote.dividendYield || 'N/A'}${quote.dividendYield !== 'N/A' ? '%' : ''}</span>
           </div>
         </div>
@@ -140,8 +140,8 @@ const StockDetailAnalyzer = {
           <h4>기술적 분석</h4>
           <div class="technical-summary">
             <div class="signal-badge ${this.getSignalClass(analysis.signal)}">${analysis.signal}</div>
-            <div class="confidence-badge">신뢰도: ${analysis.confidence}</div>
-            <div class="trend-badge">추세: ${analysis.trendStrength}</div>
+            <div class="confidence-badge"><span class="tooltip-term" data-term="신뢰도">신뢰도</span>: ${analysis.confidence}</div>
+            <div class="trend-badge"><span class="tooltip-term" data-term="추세 강도">추세</span>: ${analysis.trendStrength}</div>
           </div>
           
           <div class="technical-indicators">
@@ -207,7 +207,7 @@ const StockDetailAnalyzer = {
       .filter(indicator => indicator.value)
       .map(indicator => `
         <div class="indicator-item">
-          <span class="label">${indicator.label}:</span>
+          <span class="label tooltip-term" data-term="${indicator.label}">${indicator.label}:</span>
           <span class="value">${indicator.prefix || ''}${indicator.value}</span>
         </div>
       `).join('');

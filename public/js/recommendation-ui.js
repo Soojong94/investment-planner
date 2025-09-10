@@ -115,7 +115,12 @@ const RecommendationUI = {
         e.stopPropagation();
         const ticker = button.dataset.ticker;
         console.log('Detail button clicked for:', ticker);
+        
+        // 상세 분석 실행
         StockDetailAnalyzer.analyzeStock(ticker);
+        
+        // 트레이딩뷰 차트 심볼도 변경
+        ChartManager.updateSymbol(ticker);
       });
     });
   },

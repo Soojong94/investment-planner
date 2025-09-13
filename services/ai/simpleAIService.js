@@ -46,19 +46,11 @@ class HuggingFaceDeepSeekService {
       }
       
       // 모든 모델 실패 시
-      return {
-        status: 'error',
-        message: 'All Hugging Face models failed, using mock AI',
-        aiProvider: 'mock-fallback'
-      };
+      throw new Error('All Hugging Face models failed. Please check your API key and network connection.');
       
     } catch (error) {
       console.error('Hugging Face connection error:', error.message);
-      return {
-        status: 'error',
-        message: `Connection failed: ${error.message}`,
-        aiProvider: 'error'
-      };
+      throw error;
     }
   }
   
@@ -108,8 +100,7 @@ class HuggingFaceDeepSeekService {
   // AI를 사용한 센티멘트 분석  
   async analyzeSentiment(ticker = 'MARKET', marketData = {}) {
     if (!this.apiKey) {
-      console.log('No API key, using mock sentiment');
-      return this.getMockSentiment(ticker);
+      throw new Error('Hugging Face API key is required. Please set HUGGINGFACE_API_KEY in your .env file.');
     }
 
     try {
@@ -133,8 +124,7 @@ class HuggingFaceDeepSeekService {
       console.log(`Hugging Face response status for ${ticker}:`, response.status);
 
       if (!response.ok) {
-        console.warn(`Hugging Face API error for ${ticker}: ${response.status}, falling back to mock`);
-        return this.getMockSentiment(ticker);
+        throw new Error(`Hugging Face API error for ${ticker}: ${response.status}`);
       }
 
       const data = await response.json();
@@ -145,18 +135,29 @@ class HuggingFaceDeepSeekService {
       let confidence = 0.6;
       
       if (Array.isArray(data) && data.length > 0) {
-        // 가장 높은 점수의 라벨 찾기
-        const topResult = data.reduce((max, current) => current.score > max.score ? current : max);
+        // 복수의 배열이 오는 경우 (예: [[{...}]]) 처리
+        let results = Array.isArray(data[0]) ? data[0] : data;
         
-        if (topResult.label.includes('POSITIVE') || topResult.label === 'LABEL_2') {
-          sentiment = 'positive';
-          confidence = topResult.score;
-        } else if (topResult.label.includes('NEGATIVE') || topResult.label === 'LABEL_0') {
-          sentiment = 'negative';
-          confidence = topResult.score;
-        } else {
-          sentiment = 'neutral';
-          confidence = topResult.score;
+        if (Array.isArray(results) && results.length > 0) {
+          // 가장 높은 점수의 라벨 찾기
+          const topResult = results.reduce((max, current) => {
+            return (current && current.score && current.score > (max.score || 0)) ? current : max;
+          }, { score: 0 });
+          
+          if (topResult && topResult.label && topResult.score) {
+            confidence = topResult.score;
+            
+            // 라벨에 따른 센티멘트 매핑
+            const label = topResult.label.toString().toUpperCase();
+            
+            if (label.includes('POSITIVE') || label === 'LABEL_2' || label.includes('POS')) {
+              sentiment = 'positive';
+            } else if (label.includes('NEGATIVE') || label === 'LABEL_0' || label.includes('NEG')) {
+              sentiment = 'negative';
+            } else {
+              sentiment = 'neutral';
+            }
+          }
         }
       }
 
@@ -174,7 +175,7 @@ class HuggingFaceDeepSeekService {
 
     } catch (error) {
       console.error(`Hugging Face analysis failed for ${ticker}:`, error.message);
-      return this.getMockSentiment(ticker);
+      throw error;
     }
   }
 
@@ -224,33 +225,7 @@ class HuggingFaceDeepSeekService {
     }
   }
 
-  // Mock 센티멘트 (API 실패 시)
-  getMockSentiment(ticker) {
-    const sentiments = ['positive', 'neutral', 'negative'];
-    const weights = [0.4, 0.4, 0.2]; // 긍정적 편향
-    
-    let random = Math.random();
-    let sentiment = 'neutral';
-    
-    if (random < weights[0]) {
-      sentiment = 'positive';
-    } else if (random < weights[0] + weights[1]) {
-      sentiment = 'neutral';
-    } else {
-      sentiment = 'negative';
-    }
-    
-    const confidence = 0.6 + Math.random() * 0.2;
 
-    return {
-      ticker,
-      sentiment,
-      confidence,
-      analysis: this.generateKoreanAnalysis(ticker, sentiment, confidence),
-      aiProvider: 'mock',
-      timestamp: new Date().toISOString()
-    };
-  }
 
   // 한국어 분석 생성
   generateKoreanAnalysis(ticker, sentiment, confidence) {
@@ -328,6 +303,27 @@ class HuggingFaceDeepSeekService {
       default: return 'Hold';
     }
   }
+
+  // NEW: AI 인사이트 생성 메소드 추가 (뉴스 기반 시기적 분석용)
+  async generateInsight(prompt) {
+    if (!this.apiKey) {
+      throw new Error('Hugging Face API key is required for insight generation.');
+    }
+    
+    try {
+      console.log('Generating AI insight with prompt:', prompt.substring(0, 100) + '...');
+      
+      // Hugging Face 모델은 주로 분류에 특화되어 있으므로
+      // 현재로서는 실제 텍스트 생성이 어려움
+      throw new Error('Text generation not supported with current Hugging Face models');
+      
+    } catch (error) {
+      console.error('Error generating AI insight:', error);
+      throw error;
+    }
+  }
+
+
 }
 
 module.exports = HuggingFaceDeepSeekService;

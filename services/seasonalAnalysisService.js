@@ -1,12 +1,14 @@
 // 시기적 분석 서비스 - DeepSeek AI 모델 활용
-const huggingFaceService = require('./ai/huggingFaceService');
+const SimpleAIService = require('./ai/simpleAIService');
 const yahooFinanceService = require('./yahooFinanceService');
 const { monthlyCharacteristics, monthNames } = require('./seasonalData');
 const SeasonalUtils = require('./seasonalUtils');
+const seasonalScoreCache = require('./seasonalScoreCache');
 
 class SeasonalAnalysisService {
   constructor() {
     this.monthlyCharacteristics = monthlyCharacteristics;
+    this.aiService = new SimpleAIService();
   }
 
   // 월별 종합 시기적 분석 (DeepSeek 활용)
@@ -35,13 +37,8 @@ class SeasonalAnalysisService {
         historicalData
       );
 
-      // 종합 시기적 점수 계산
-      const seasonalScore = this.calculateEnhancedSeasonalScore(
-        basicSeasonal,
-        historicalData,
-        monthCharacteristics,
-        aiAnalysis
-      );
+      // 종합 시기적 점수 계산 (뉴스 기반 분석 결과 직접 사용)
+      const seasonalScore = await this.getNewsBasedSeasonalScore(ticker, month);
 
       return {
         ticker,
@@ -63,7 +60,44 @@ class SeasonalAnalysisService {
     }
   }
 
-  // DeepSeek AI를 활용한 시기적 분석
+  /**
+   * 뉴스 기반 시기적 점수 공유 결과 사용
+   */
+  async getNewsBasedSeasonalScore(ticker, month) {
+    try {
+      console.log(`🗓️ Getting news-based seasonal score for ${ticker}...`);
+      
+      // 캐시에서 먼저 확인
+      const cachedScore = seasonalScoreCache.getScore(ticker, month);
+      if (cachedScore !== null) {
+        return cachedScore;
+      }
+      
+      // 캐시가 없으면 뉴스 분석 실행
+      console.log(`🔍 No cached score found, running news analysis for ${ticker}...`);
+      const NewsSeasonalAnalyzer = require('./news/newsSeasonalAnalyzer');
+      const newsAnalyzer = new NewsSeasonalAnalyzer();
+      const result = await newsAnalyzer.analyzeNewsSeasonalScore(ticker, month);
+      
+      console.log(`✅ News-based score for ${ticker}: ${result.seasonalScore}`);
+      return result.seasonalScore;
+      
+    } catch (error) {
+      console.error(`❌ Error getting news-based seasonal score for ${ticker}:`, error);
+      return this.calculateFallbackSeasonalScore(ticker, month);
+    }
+  }
+  /**
+   * 기본 계절 점수 계산 (에러 시 대비책)
+   */
+  calculateFallbackSeasonalScore(ticker, month) {
+    const monthlyScores = {
+      0: 0.75, 1: 0.65, 2: 0.60, 3: 0.80, 4: 0.50, 5: 0.55,
+      6: 0.60, 7: 0.45, 8: 0.70, 9: 0.75, 10: 0.85, 11: 0.90
+    };
+    return monthlyScores[month] || 0.65;
+  }
+
   async getAISeasonalAnalysis(ticker, month, monthCharacteristics, historicalData) {
     try {
       // AI 분석을 위한 컨텍스트 구성
@@ -76,11 +110,10 @@ class SeasonalAnalysisService {
 
       console.log(`AI seasonal analysis for ${ticker} in ${monthNames[month]}`);
 
-      // huggingFaceService의 기존 메서드 활용하여 DeepSeek 분석
-      const sentiment = await huggingFaceService.analyzeSentiment({
+      // aiService의 기존 메서드 활용하여 DeepSeek 분석
+      const sentiment = await this.aiService.analyzeSentiment(ticker, {
         marketText: analysisContext,
         seasonalContext: true,
-        ticker: ticker,
         month: month
       });
 

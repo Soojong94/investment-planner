@@ -1,10 +1,7 @@
 // Stock Detail Analyzer - 상세 종목 분석 전용
 const StockDetailAnalyzer = {
 
-  async analyzeStock(ticker) {
-    console.log('=== StockDetailAnalyzer.analyzeStock called ===');
-    console.log('Ticker:', ticker);
-    
+  async analyzeStock(ticker, userAction = 'click') {
     try {
       // 선택 종목 분석 섹션으로 스크롤
       const analysisSection = document.getElementById('selected-stock-analysis');
@@ -13,41 +10,41 @@ const StockDetailAnalyzer = {
         this.showLoadingState(ticker);
       }
 
-      console.log('Making API calls for:', ticker);
-      
-      // API 호출들을 병렬로 실행
-      const [analysisResponse, scoreResponse, quoteResponse, companyResponse] = await Promise.all([
+      // 캐시 전략 결정
+      const cacheStrategy = window.AnalysisCacheManager ?
+        window.AnalysisCacheManager.decideCacheStrategy(ticker, userAction) :
+        { useCache: false, data: null };
+
+      if (cacheStrategy.useCache && cacheStrategy.data) {
+        this.displayCachedAnalysis(ticker, cacheStrategy.data);
+        return;
+      }
+
+      // API 호출들을 병렬로 실행 (뉴스 기반 시기적 분석만)
+      const [analysisResponse, scoreResponse, quoteResponse, companyResponse, newsSeasonalResponse] = await Promise.all([
         fetch(`/api/analysis/${ticker}`),
         fetch(`/api/score/${ticker}`),
         fetch(`/api/quote/${ticker}`),
-        fetch(`/api/company-info/${ticker}`)
+        fetch(`/api/company-info/${ticker}`),
+        fetch(`/api/seasonal/ai/${ticker}`) // 뉴스 기반 시기적 분석만
       ]);
-      
-      console.log('API responses received:', {
-        analysis: analysisResponse.ok,
-        score: scoreResponse.ok,
-        quote: quoteResponse.ok,
-        company: companyResponse.ok
-      });
 
-      const [analysis, score, quote, company] = await Promise.all([
+      const [analysis, score, quote, company, newsSeasonal] = await Promise.all([
         analysisResponse.ok ? analysisResponse.json() : null,
         scoreResponse.ok ? scoreResponse.json() : null,
         quoteResponse.ok ? quoteResponse.json() : null,
-        companyResponse.ok ? companyResponse.json() : null
+        companyResponse.ok ? companyResponse.json() : null,
+        newsSeasonalResponse.ok ? newsSeasonalResponse.json() : null
       ]);
-      
-      console.log('Parsed API data:', {
-        analysis: !!analysis,
-        score: !!score,
-        quote: !!quote,
-        company: !!company
-      });
+
+      // 데이터 캐시에 저장
+      const analysisData = { analysis, score, quote, company, newsSeasonal };
+      if (window.AnalysisCacheManager) {
+        window.AnalysisCacheManager.setCachedAnalysis(ticker, analysisData);
+      }
 
       // 결과 표시
-      this.displayAnalysis(ticker, analysis, score, quote, company);
-      
-      console.log('Analysis display completed for:', ticker);
+      this.displayAnalysis(ticker, analysis, score, quote, company, newsSeasonal);
 
     } catch (error) {
       console.error('Error analyzing stock:', error);
@@ -69,21 +66,30 @@ const StockDetailAnalyzer = {
     }
   },
 
-  displayAnalysis(ticker, analysis, score, quote, company) {
-    this.updateHeader(ticker, quote);
+  displayCachedAnalysis(ticker, cachedData) {
+    const { analysis, score, quote, company, newsSeasonal } = cachedData;
+
+    // 헤더에 캐시 표시 추가
+    this.updateHeaderWithCacheInfo(ticker, quote, true);
     this.updateFundamentals(quote);
-    this.updateTechnicalAnalysis(analysis, score);
+    this.updateTechnicalAnalysis(analysis, score, newsSeasonal);
     this.updateCompanyDescription(company);
+
+    // 캐시 사용 알림 표시
+    this.showCacheNotification();
   },
 
-  updateHeader(ticker, quote) {
+  updateHeaderWithCacheInfo(ticker, quote, fromCache = false) {
     const headerDiv = document.getElementById('selected-stock-header');
     if (headerDiv) {
+      const cacheIndicator = fromCache ?
+        '<span class="cache-indicator" title="캐시된 데이터 사용 중 (새로고침하면 최신 데이터 조회)">🔄 캐시</span>' : '';
+
       headerDiv.innerHTML = `
-        <h3>${ticker} 상세 분석</h3>
+        <h3>${ticker} 상세 분석 ${cacheIndicator}</h3>
         <div class="stock-price-info">
           ${quote && quote.currentPrice ? `
-            <span class="current-price">$${quote.currentPrice}</span>
+            <span class="current-price">${quote.currentPrice}</span>
             <span class="price-change ${quote.changePercent && quote.changePercent.includes('-') ? 'negative' : 'positive'}">
               ${quote.changePercent}%
             </span>
@@ -91,6 +97,80 @@ const StockDetailAnalyzer = {
         </div>
       `;
     }
+  },
+
+  showCacheNotification() {
+    // 기존 알림이 있으면 제거
+    const existingNotification = document.querySelector('.cache-notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    // 캐시 사용 알림 생성
+    const notification = document.createElement('div');
+    notification.className = 'cache-notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span class="notification-icon">💾</span>
+        <span class="notification-text">캐시된 분석 결과를 표시하고 있습니다. 최신 데이터를 원하시면 </span>
+        <button class="refresh-btn">새로고침</button>
+        <button class="close-btn">×</button>
+      </div>
+    `;
+
+    // 이벤트 리스너 추가
+    const refreshBtn = notification.querySelector('.refresh-btn');
+    const closeBtn = notification.querySelector('.close-btn');
+
+    refreshBtn.addEventListener('click', () => {
+      this.forceRefreshAnalysis();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      notification.remove();
+    });
+
+    // 분석 섹션 상단에 삽입
+    const analysisSection = document.getElementById('selected-stock-analysis');
+    if (analysisSection) {
+      analysisSection.insertBefore(notification, analysisSection.firstChild);
+
+      // 3초 후 자동 제거
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 3000);
+    }
+  },
+
+  forceRefreshAnalysis() {
+    const currentTicker = this.getCurrentTicker();
+    if (currentTicker) {
+      // 캐시 클리어 후 강제 새로고침
+      if (window.AnalysisCacheManager) {
+        window.AnalysisCacheManager.clearTickerCache(currentTicker);
+      }
+      this.analyzeStock(currentTicker, 'force_refresh');
+    }
+  },
+
+  getCurrentTicker() {
+    // 현재 분석 중인 종목 티커 반환
+    const headerElement = document.querySelector('#selected-stock-header h3');
+    if (headerElement) {
+      const headerText = headerElement.textContent;
+      const match = headerText.match(/^([A-Z]+)/);
+      return match ? match[1] : null;
+    }
+    return null;
+  },
+  displayAnalysis(ticker, analysis, score, quote, company, newsSeasonal) {
+    this.updateHeaderWithCacheInfo(ticker, quote, false);
+    this.updateFundamentals(quote);
+    this.updateTechnicalAnalysis(analysis, score, newsSeasonal);
+    this.updateCompanyDescription(company);
   },
 
   updateFundamentals(quote) {
@@ -127,12 +207,12 @@ const StockDetailAnalyzer = {
     }
   },
 
-  updateTechnicalAnalysis(analysis, score) {
+  updateTechnicalAnalysis(analysis, score, newsSeasonal) {
     const detailsDiv = document.getElementById('selected-stock-details');
     if (!detailsDiv) return;
 
     let content = '';
-    
+
     // 기술적 분석 섹션
     if (analysis) {
       content += `
@@ -159,11 +239,16 @@ const StockDetailAnalyzer = {
           </div>` : ''}
           
           ${analysis.analysis ? `<div class="analysis-summary"><p>${analysis.analysis}</p></div>` : ''}
+          
+          ${analysis.model ? `
+          <div class="ai-model-info">
+            <small>🤖 기술적 분석 AI 모델: ${analysis.model} | 제공: ${analysis.aiProvider || 'Yahoo Finance'}</small>
+          </div>` : ''}
         </div>
       `;
     }
-    
-    // 종합 점수 섹션 (상세 시기적/펀더멘털 설명 추가)
+
+    // 종합 점수 섹션 (뉴스 기반 시기적 분석 정보 포함)
     if (score) {
       content += `
         <div class="score-section">
@@ -177,7 +262,7 @@ const StockDetailAnalyzer = {
           </div>
           
           <div class="score-breakdown-detailed">
-            ${this.createDetailedScoreBreakdown(score)}
+            ${this.createDetailedScoreBreakdown(score, newsSeasonal)}
           </div>
           
           ${score.reasons ? `
@@ -186,6 +271,81 @@ const StockDetailAnalyzer = {
             <div class="reasons-tags">
               ${score.reasons.map(reason => `<span class="reason-tag">${reason}</span>`).join('')}
             </div>
+          </div>` : ''}
+          
+          ${score.model || score.aiProvider ? `
+          <div class="ai-model-info">
+            <small>🤖 점수 계산 AI 모델: ${score.model || 'Yahoo Finance + AI'} | 제공: ${score.aiProvider || 'Hybrid Analysis'}</small>
+          </div>` : ''}
+        </div>
+      `;
+    }
+
+    // NEW: 뉴스 기반 시기적 분석 섹션 추가
+    if (newsSeasonal) {
+      content += `
+        <div class="news-seasonal-section">
+          <h4>📈 계절적 분석</h4>
+          <div class="news-seasonal-summary">
+            <div class="seasonal-score-display">
+              <!-- 계절적 점수 숨김 -->
+              
+            </div>
+          </div>
+          
+          ${newsSeasonal.newsAnalysis ? `
+          <div class="news-analysis-summary">
+            <h5>📊 분석 현황</h5>
+            <div class="analysis-stats">
+              <span class="stat-item">총 분석 뉴스: ${newsSeasonal.newsAnalysis.totalNewsAnalyzed}개</span>
+              <span class="stat-item">종목 뉴스: ${newsSeasonal.newsAnalysis.stockNewsCount}개</span>
+              <span class="stat-item">시장 뉴스: ${newsSeasonal.newsAnalysis.marketNewsCount}개</span>
+              <span class="stat-item">평균 관련성: ${(newsSeasonal.newsAnalysis.averageRelevance * 100).toFixed(0)}%</span>
+            </div>
+          </div>` : ''}
+          
+          ${newsSeasonal.newsImpact && newsSeasonal.newsImpact.relatedNews && newsSeasonal.newsImpact.relatedNews.length > 0 ? `
+          <div class="related-news-section">
+            <h5>📰 관련 뉴스</h5>
+            <div class="news-list">
+              ${newsSeasonal.newsImpact.relatedNews.map(newsItem => `
+                <div class="news-item">
+                  <div class="news-header">
+                    <span class="news-sentiment ${newsItem.sentiment}">${this.translateSentiment(newsItem.sentiment)}</span>
+                    <span class="news-source">${newsItem.source}</span>
+                    <span class="news-time">${this.formatNewsTime(newsItem.publishedAt)}</span>
+                  </div>
+                  <div class="news-title"><a href="${newsItem.url}" target="_blank" rel="noopener">${newsItem.title}</a></div>
+                  <div class="news-summary">${newsItem.summary}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>` : ''}
+          
+          <!-- 시장 뉴스 섹션 숨김 -->
+          
+          <!-- 뉴스 영향 분석 섹션 숨김 -->
+          
+          ${newsSeasonal.insights && newsSeasonal.insights.length > 0 ? `
+          <div class="ai-insights-section">
+            <h5>📊 계절적 인사이트</h5>
+            <div class="insights-list">
+              ${newsSeasonal.insights.map(insight => `
+                <div class="insight-item">
+                  <span class="insight-icon">💡</span>
+                  <span class="insight-text">${insight}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>` : ''}
+          
+          <div class="last-updated">
+            <small>마지막 업데이트: ${new Date(newsSeasonal.lastUpdated).toLocaleString('ko-KR')}</small>
+          </div>
+          
+          ${newsSeasonal.model ? `
+          <div class="ai-model-info">
+            <small>🤖 AI 모델: ${newsSeasonal.model} | 제공: ${newsSeasonal.aiProvider || 'Hugging Face'}</small>
           </div>` : ''}
         </div>
       `;
@@ -213,9 +373,9 @@ const StockDetailAnalyzer = {
       `).join('');
   },
 
-  createDetailedScoreBreakdown(score) {
+  createDetailedScoreBreakdown(score, newsSeasonal) {
     let html = '';
-    
+
     // 기술적 분석 상세
     if (score.technicalScore !== undefined) {
       const techScore = (score.technicalScore * 100).toFixed(0);
@@ -239,30 +399,33 @@ const StockDetailAnalyzer = {
         </div>
       `;
     }
-    
-    // 시기적 분석 상세
+
+    // 시기적 분석 상세 (뉴스 기반)
     if (score.seasonalScore !== undefined) {
       const seasonalScore = (score.seasonalScore * 100).toFixed(0);
-      const seasonalDetails = score.details?.seasonal;
       html += `
         <div class="score-item-detailed">
           <div class="score-header">
-            <span class="score-label">계절적 분석</span>
+            <span class="score-label">🔥 뉴스 기반 시기적 분석</span>
             <div class="score-bar">
               <div class="score-fill seasonal" style="width: ${seasonalScore}%"></div>
             </div>
             <span class="score-value">${seasonalScore}</span>
           </div>
-          ${seasonalDetails ? `
+          ${newsSeasonal ? `
           <div class="score-details">
-            <p><strong>최고 성과 월:</strong> ${seasonalDetails.bestMonth}</p>
-            <p><strong>최저 성과 월:</strong> ${seasonalDetails.worstMonth}</p>
-            <p><strong>시기적 추천:</strong> ${this.getSeasonalRecommendation(seasonalDetails)}</p>
-          </div>` : ''}
+            <p><strong>뉴스 영향:</strong> ${newsSeasonal.newsImpact?.sentiment ? this.translateSentiment(newsSeasonal.newsImpact.sentiment) : '중립적'} 감정</p>
+            <p><strong>시장 센티멘트:</strong> ${newsSeasonal.marketSentiment?.sentiment ? this.translateSentiment(newsSeasonal.marketSentiment.sentiment) : '중립적'} 분위기</p>
+            <p><strong>분석 신뢰도:</strong> ${newsSeasonal.confidence ? (newsSeasonal.confidence * 100).toFixed(0) + '%' : '50%'}</p>
+            ${newsSeasonal.insights && newsSeasonal.insights.length > 0 ? `<p><strong>핵심 인사이트:</strong> ${newsSeasonal.insights[0].substring(0, 50)}...</p>` : ''}
+          </div>` : `
+          <div class="score-details">
+            <p>뉴스 기반 시기적 분석이 적용되었습니다.</p>
+          </div>`}
         </div>
       `;
     }
-    
+
     // 펀더멘털 분석 상세
     if (score.fundamentalScore !== undefined) {
       const fundamentalScore = (score.fundamentalScore * 100).toFixed(0);
@@ -288,7 +451,7 @@ const StockDetailAnalyzer = {
         </div>
       `;
     }
-    
+
     return html;
   },
 
@@ -332,7 +495,7 @@ const StockDetailAnalyzer = {
     const sma50 = parseFloat(techDetails.sma50);
     const sma200 = parseFloat(techDetails.sma200);
     const currentPrice = parseFloat(techDetails.currentPrice);
-    
+
     if (sma50 > sma200) {
       return `골든크로스 형성 중 (단기>장기 이평선), 상승 추세 지속 가능성`;
     } else {
@@ -345,20 +508,20 @@ const StockDetailAnalyzer = {
     if (!seasonalDetails) {
       return '계절적 분석 데이터가 없습니다.';
     }
-    
+
     const bestMonth = seasonalDetails.bestMonth;
     const worstMonth = seasonalDetails.worstMonth;
     const currentMonth = new Date().getMonth() + 1;
-    
+
     // 월 데이터가 없는 경우 기본 메시지 반환
     if (!bestMonth && !worstMonth) {
       return '계절적 패턴 분석을 위해 더 많은 데이터가 필요합니다.';
     }
-    
+
     // 최고 성과 월에서 월 번호 추출
     const bestMonthNum = bestMonth ? this.extractMonthNumber(bestMonth) : 0;
     const worstMonthNum = worstMonth ? this.extractMonthNumber(worstMonth) : 0;
-    
+
     if (bestMonthNum > 0 && currentMonth === bestMonthNum) {
       return `현재 월이 역사적 최고 성과 월입니다. 매수 적기일 가능성`;
     } else if (worstMonthNum > 0 && currentMonth === worstMonthNum) {
@@ -377,23 +540,23 @@ const StockDetailAnalyzer = {
     if (!monthString || typeof monthString !== 'string') {
       return 0;
     }
-    
+
     const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
     for (let i = 0; i < monthNames.length; i++) {
       if (monthString.includes(monthNames[i])) {
         return i + 1;
       }
     }
-    
+
     // 영어 월 이름도 체크
-    const englishMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                               'July', 'August', 'September', 'October', 'November', 'December'];
+    const englishMonthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
     for (let i = 0; i < englishMonthNames.length; i++) {
       if (monthString.toLowerCase().includes(englishMonthNames[i].toLowerCase())) {
         return i + 1;
       }
     }
-    
+
     // 숫자 형태 체크 (1, 2, 3... 또는 01, 02, 03...)
     const monthMatch = monthString.match(/(\d{1,2})/);
     if (monthMatch) {
@@ -402,7 +565,7 @@ const StockDetailAnalyzer = {
         return monthNum;
       }
     }
-    
+
     return 0;
   },
 
@@ -435,7 +598,7 @@ const StockDetailAnalyzer = {
     const high = parseFloat(quoteDetails.fiftyTwoWeekHigh);
     const low = parseFloat(quoteDetails.fiftyTwoWeekLow);
     const position = ((current - low) / (high - low)) * 100;
-    
+
     if (position >= 80) {
       return `52주 고점 근처 (${position.toFixed(0)}%), 고점 돌파 시 추가 상승 가능`;
     } else if (position >= 60) {
@@ -475,6 +638,39 @@ const StockDetailAnalyzer = {
       return `${(volume / 1e3).toFixed(1)}K`;
     }
     return volume.toString();
+  },
+
+  // NEW: 센티멘트 번역 메소드
+  translateSentiment(sentiment) {
+    const translations = {
+      'positive': '긍정적',
+      'negative': '부정적',
+      'neutral': '중립적'
+    };
+    return translations[sentiment] || '중립적';
+  },
+
+  // NEW: 뉴스 시간 포맷팅
+  formatNewsTime(publishedAt) {
+    if (!publishedAt) return '시간 정보 없음';
+
+    try {
+      const newsDate = new Date(publishedAt);
+      const now = new Date();
+      const diffMs = now - newsDate;
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMins < 1) return '방금 전';
+      if (diffMins < 60) return `${diffMins}분 전`;
+      if (diffHours < 24) return `${diffHours}시간 전`;
+      if (diffDays < 7) return `${diffDays}일 전`;
+
+      return newsDate.toLocaleDateString('ko-KR');
+    } catch (error) {
+      return '시간 오류';
+    }
   }
 };
 

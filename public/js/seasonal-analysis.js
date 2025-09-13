@@ -3,18 +3,15 @@ const SeasonalAnalysis = {
   currentTicker: null,
 
   init() {
-    console.log('SeasonalAnalysis module initialized');
     // 초기화 시에는 아무것도 표시하지 않음
   },
 
   // 개별 종목의 시기적 분석을 표시하는 메인 함수
   async displayIndividualSeasonalAnalysis(ticker) {
-    console.log(`Displaying seasonal analysis for ${ticker}`);
     this.currentTicker = ticker;
 
     const container = document.getElementById('seasonal-analysis-content');
     if (!container) {
-      console.error('Seasonal analysis container not found');
       return;
     }
 

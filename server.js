@@ -21,50 +21,35 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(port, async () => {
+  const isProduction = process.env.NODE_ENV === 'production';
   
-  // AI API 상태 확인
-  const deepSeekApiKey = process.env.DEEPSEEK_API_KEY;
-  const huggingFaceApiKey = process.env.HUGGINGFACE_API_KEY;
-  
-  console.log('\n🤖 AI 서비스 상태:');
-  
-  // Hugging Face (DeepSeek 모델) - 현재 사용 중
-  if (huggingFaceApiKey && huggingFaceApiKey.startsWith('hf_')) {
-    console.log('✅ Hugging Face API 키가 설정되어 있습니다.');
-    console.log('🤖 DeepSeek 모델이 Hugging Face에서 로드됩니다.');
-    console.log('📈 고급 AI 추론 및 시장 분석 기능 활성화');
+  if (!isProduction) {
+    console.log(`📈 투자 보조 프로그램 서버 시작: http://localhost:${port}`);
+    
+    // AI API 상태 확인 (개발 모드에서만 표시)
+    const huggingFaceApiKey = process.env.HUGGINGFACE_API_KEY;
+    
+    if (huggingFaceApiKey && huggingFaceApiKey.startsWith('hf_')) {
+      console.log('🤖 AI API 키 설정 확인됨 - 연결 테스트 중...');
+      
+      // AI 서비스 연결 테스트
+      const HuggingFaceDeepSeekService = require('./services/ai/simpleAIService');
+      const testAiService = new HuggingFaceDeepSeekService();
+      
+      try {
+        const status = await testAiService.checkApiStatus();
+        console.log(`✅ AI 서비스 연결 성공: ${status.model}`);
+        console.log('🔥 실제 AI 분석 기능 활성화됨 (Mock 데이터 없음)');
+      } catch (error) {
+        console.log(`❌ AI 서비스 연결 실패: ${error.message}`);
+        console.log('⚠️ 실제 주식 데이터만 제공됨 (AI 분석 불가)');
+      }
+    } else {
+      console.log('⚠️ AI API 키 미설정 - AI 기능 비활성화');
+      console.log('💡 .env 파일에 HUGGINGFACE_API_KEY를 설정하면 AI 분석 기능을 사용할 수 있습니다');
+    }
   } else {
-    console.log('⚠️  Hugging Face API 키가 설정되지 않았습니다.');
-    console.log('📝 .env 파일에 HUGGINGFACE_API_KEY를 설정하면 DeepSeek AI 모델을 사용할 수 있습니다.');
+    console.log('🚀 투자 보조 프로그램 서버 시작됨');
   }
-  
-  // DeepSeek Direct API (대안)
-  if (deepSeekApiKey && deepSeekApiKey.startsWith('sk-')) {
-    console.log('📝 DeepSeek Direct API 키도 설정되어 있습니다 (대안용).');
-  }
-  
-  if (!huggingFaceApiKey && !deepSeekApiKey) {
-    console.log('🔧 Mock 데이터로 기본 기능이 동작합니다.');
-  }
-  
-  console.log('\n📊 사용 가능한 기능:');
-  console.log('- 실시간 주식 데이터 조회');
-  console.log('- 기술적 분석 (RSI, MACD, 볼린저밴드)');
-  console.log('- 계절적 분석 (월별 성과)');
-  console.log('- 종합 투자 점수 계산');
-  console.log('- 월별 추천 종목 생성');
-  if (huggingFaceApiKey && huggingFaceApiKey.startsWith('hf_')) {
-    console.log('- DeepSeek AI 모델 기반 시장 센티멘트 분석');
-    console.log('- 고급 AI 종목 추천 및 투자 전략');
-    console.log('- 한국어 자연어 분석 결과');
-  }
-  
-  console.log('\n🌐 웹 인터페이스: http://localhost:3000');
-  console.log('🔍 API 상태 확인: http://localhost:3000/api/ai/status');
-  console.log('📈 월별 추천: http://localhost:3000/api/recommendations/monthly');
-  console.log('\n📚 설정 가이드:');
-  console.log('- Hugging Face: https://huggingface.co/settings/tokens');
-  console.log('- DeepSeek Direct: https://platform.deepseek.com/');
 });

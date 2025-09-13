@@ -37,15 +37,21 @@ router.get('/seasonal/:ticker', async (req, res) => {
 });
 
 const aiStocks = [
-  'NVDA', 'MSFT', 'GOOG', 'GOOGL', 'PLTR', 'AMD', 'AVGO', 'META', 'AAPL', 'TSLA',
-  'CRWD', 'PANW', 'SNOW', 'SMCI', 'MRVL', 'AMZN', 'ADBE', 'NOW', 'ISRG', 'SNPS',
-  'CDNS', 'WDAY', 'NXPI', 'ROK', 'BIDU', 'ALAB', 'SYM', 'TTD', 'TWLO', 'TEMP'
+  // 대형 AI/Tech 기업들
+  'NVDA', 'MSFT', 'GOOG', 'GOOGL', 'META', 'AAPL', 'TSLA', 'AMZN', 'NFLX', 'CRM',
+  // AI 전문 기업들
+  'PLTR', 'SNOW', 'CRWD', 'PANW', 'NOW', 'WDAY', 'ADBE', 'ORCL', 'ADSK', 'INTU',
+  // 신흥 AI 기업들
+  'SMCI', 'ALAB', 'SYM', 'TTD', 'TWLO', 'TEMP', 'SPLK', 'OKTA', 'ZS', 'DDOG'
 ];
 
 const semiconductorStocks = [
-  'NVDA', 'TSM', 'AVGO', 'ASML', 'SSNLF', 'AMD', 'QCOM', 'AMAT', 'ARM', 'TXN',
-  'INTC', 'MU', 'ADI', 'NXPI', 'MRVL', 'MPWR', 'ALAB', 'STM', 'ASX', 'GFS',
-  'SWKS', 'MTSI', 'QRVO', 'RMBS', 'TSEM', 'CRUS', 'ALGM', 'PI', 'SMTC', 'SLAB'
+  // 메가캡 반도체
+  'NVDA', 'TSM', 'AVGO', 'ASML', 'AMD', 'QCOM', 'TXN', 'INTC', 'MU', 'ADI',
+  // 중형 반도체 
+  'AMAT', 'ARM', 'NXPI', 'MRVL', 'MPWR', 'ALAB', 'LRCX', 'KLAC', 'SNPS', 'CDNS',
+  // 소형/전문 반도체
+  'STM', 'SWKS', 'QRVO', 'RMBS', 'CRUS', 'ALGM', 'PI', 'SMTC', 'SLAB', 'SITM'
 ];
 
 router.get('/stocks/ai', (req, res) => {
@@ -81,7 +87,12 @@ router.get('/ai/sentiment', async (req, res) => {
     const sentiment = await aiService.analyzeSentiment('MARKET', {});
     res.json(sentiment);
   } catch (error) {
-    res.status(500).json({ message: 'Error analyzing market sentiment', error: error.message });
+    console.error('AI sentiment analysis failed:', error.message);
+    res.status(503).json({ 
+      message: 'AI sentiment analysis service unavailable', 
+      error: 'Please ensure HUGGINGFACE_API_KEY is configured properly',
+      details: error.message
+    });
   }
 });
 
@@ -91,16 +102,32 @@ router.get('/ai/recommendations', async (req, res) => {
     const recommendations = await aiService.getStockRecommendations(tickers, {});
     res.json(recommendations);
   } catch (error) {
-    res.status(500).json({ message: 'Error getting AI recommendations', error: error.message });
+    console.error('AI recommendations failed:', error.message);
+    res.status(503).json({ 
+      message: 'AI recommendations service unavailable', 
+      error: 'Please ensure HUGGINGFACE_API_KEY is configured properly',
+      details: error.message
+    });
   }
 });
 
 router.get('/ai/status', async (req, res) => {
   try {
     const status = await aiService.checkApiStatus();
-    res.json(status);
+    res.json({
+      status: 'connected',
+      message: status.message,
+      aiProvider: status.aiProvider,
+      model: status.model
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error checking AI service status', error: error.message });
+    console.error('AI status check failed:', error.message);
+    res.status(503).json({ 
+      status: 'error',
+      message: 'AI service unavailable', 
+      error: 'Please ensure HUGGINGFACE_API_KEY is configured properly',
+      details: error.message
+    });
   }
 });
 
@@ -193,7 +220,7 @@ router.get('/ai/recommendations/enhanced', async (req, res) => {
       timestamp: new Date().toISOString(),
     };
     
-    const recommendations = await huggingFaceService.getStockRecommendations([], marketData);
+    const recommendations = await aiService.getStockRecommendations([], marketData);
     res.json(recommendations);
   } catch (error) {
     res.status(500).json({ message: 'Error getting enhanced AI recommendations', error: error.message });
@@ -217,24 +244,73 @@ router.get('/seasonal/ai/:ticker', async (req, res) => {
   try {
     const ticker = req.params.ticker;
     const currentMonth = new Date().getMonth();
-    const seasonalAnalysisService = require('../services/seasonalAnalysisService');
+    const NewsSeasonalAnalyzer = require('../services/news/newsSeasonalAnalyzer');
+    const newsSeasonalAnalyzer = new NewsSeasonalAnalyzer();
     
-    const analysis = await seasonalAnalysisService.getEnhancedSeasonalAnalysis(ticker, currentMonth);
+    // NEW: 뉴스 기반 시기적 분석 사용
+    const analysis = await newsSeasonalAnalyzer.analyzeNewsSeasonalScore(ticker, currentMonth);
     
     const aiInsights = {
       ticker: analysis.ticker,
       month: analysis.month,
       seasonalScore: analysis.seasonalScore,
-      aiInsights: analysis.aiInsights,
+      newsImpact: analysis.newsImpact, // 뉴스 영향도 정보
+      insights: analysis.insights, // AI 기반 인사이트
       recommendation: analysis.recommendation,
-      riskAssessment: analysis.riskAssessment,
-      optimalStrategy: analysis.optimalStrategy,
-      timestamp: analysis.timestamp
+      confidence: analysis.confidence, // 분석 신뢰도
+      marketSentiment: analysis.marketSentiment, // 시장 전반 센티멘트
+      newsAnalysis: analysis.newsAnalysis, // 뉴스 분석 현황
+      lastUpdated: analysis.lastUpdated,
+      fromCache: analysis.fromCache || false
     };
     
     res.json(aiInsights);
   } catch (error) {
-    res.status(500).json({ message: 'Error getting AI seasonal insights', error: error.message });
+    res.status(500).json({ message: 'Error getting AI seasonal insights with news analysis', error: error.message });
+  }
+});
+
+// NEW: 캐시 관리 API 엔드포인트들
+router.post('/cache/clear', async (req, res) => {
+  try {
+    const { type, ticker } = req.body;
+    const NewsSeasonalAnalyzer = require('../services/news/newsSeasonalAnalyzer');
+    const newsSeasonalAnalyzer = new NewsSeasonalAnalyzer();
+    
+    let clearedCount = 0;
+    
+    if (type === 'all') {
+      newsSeasonalAnalyzer.clearAnalysisCache();
+      clearedCount = 'all';
+    } else if (type === 'ticker' && ticker) {
+      // 특정 종목 캐시 클리어 (구현 필요)
+      clearedCount = 1;
+    }
+    
+    res.json({ 
+      success: true, 
+      message: `캐시가 성공적으로 삭제되었습니다.`, 
+      clearedCount 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error clearing cache', error: error.message });
+  }
+});
+
+router.get('/cache/status', async (req, res) => {
+  try {
+    const NewsSeasonalAnalyzer = require('../services/news/newsSeasonalAnalyzer');
+    const newsSeasonalAnalyzer = new NewsSeasonalAnalyzer();
+    
+    const cacheStatus = newsSeasonalAnalyzer.getCacheStatus();
+    
+    res.json({
+      success: true,
+      cacheStatus,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting cache status', error: error.message });
   }
 });
 

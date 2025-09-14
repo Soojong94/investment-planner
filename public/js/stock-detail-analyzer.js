@@ -1,6 +1,12 @@
 // Stock Detail Analyzer - 상세 종목 분석 전용
 const StockDetailAnalyzer = {
 
+  // Tooltip 용어를 적용하는 헬퍼 함수
+  wrapWithTooltip(text, term) {
+    if (!term) return text;
+    return `<span class="tooltip-term" data-term="${term}">${text}</span>`;
+  },
+
   async analyzeStock(ticker, userAction = 'click') {
     try {
       // 선택 종목 분석 섹션으로 스크롤

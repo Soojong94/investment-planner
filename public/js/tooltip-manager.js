@@ -104,3 +104,6 @@ const TooltipManager = {
     }
   }
 };
+
+// TooltipManager를 window 객체에 등록
+window.TooltipManager = TooltipManager;

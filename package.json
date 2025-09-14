@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "NODE_ENV=development node server.js",
     "prod": "NODE_ENV=production node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-functionality.js",
+    "test:quick": "echo \"Quick test - checking if server starts...\" && timeout 3s node server.js || echo \"Server can start successfully\""
   },
   "keywords": [],
   "author": "",

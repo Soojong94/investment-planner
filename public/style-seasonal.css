@@ -2,7 +2,7 @@
 #individual-seasonal-analysis {
     margin-top: 30px;
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #1f2937;
     border-radius: 8px;
 }
 
@@ -11,12 +11,12 @@
 }
 
 .seasonal-analysis-header h3 {
-    color: #2c3e50;
+    color: #ffffff;
     margin: 0 0 5px 0;
 }
 
 .analysis-subtitle {
-    color: #6c757d;
+    color: #b0b8c5;
     font-size: 0.9em;
     margin: 0;
 }
@@ -24,15 +24,15 @@
 .loading-spinner {
     text-align: center;
     padding: 40px;
-    color: #6c757d;
+    color: #b0b8c5;
 }
 
 .error-message {
     text-align: center;
     padding: 30px;
-    background-color: #f8d7da;
+    background-color: rgba(220, 53, 69, 0.2);
     border-radius: 6px;
-    color: #721c24;
+    color: #dc3545;
 }
 
 .error-details {
@@ -68,10 +68,10 @@
 }
 
 .seasonal-card {
-    background: white;
+    background: #2a354b;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
     text-align: center;
     border-left: 4px solid #17a2b8;
 }
@@ -86,7 +86,7 @@
 
 .seasonal-card h4 {
     margin: 0 0 10px 0;
-    color: #2c3e50;
+    color: #e0e0e0;
     font-size: 1.1em;
 }
 
@@ -94,18 +94,18 @@
     font-size: 1.4em;
     font-weight: bold;
     margin: 10px 0;
-    color: #495057;
+    color: #ffffff;
 }
 
 .month-detail {
     font-size: 0.9em;
-    color: #6c757d;
+    color: #b0b8c5;
     margin: 0;
 }
 
 /* Upgrade Notice Styles */
 .upgrade-notice {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3d52a0 0%, #7091e6 100%);
     color: white;
     padding: 25px;
     border-radius: 8px;
@@ -146,15 +146,15 @@
 }
 
 .chart-container {
-    background: white;
+    background: #2a354b;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .chart-container h4 {
     margin: 0 0 15px 0;
-    color: #2c3e50;
+    color: #e0e0e0;
     font-size: 1.1em;
     text-align: center;
 }

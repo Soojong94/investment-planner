@@ -3,41 +3,42 @@ body {
   line-height: 1.6;
   margin: 0;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   min-height: 100vh;
-  color: #333;
+  color: #e0e0e0;
 }
 
 header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   color: white;
   text-align: center;
   padding: 2rem 0;
   margin: -20px -20px 30px -20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 header h1 {
   margin: 0;
   font-size: 2.5em;
   font-weight: 300;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 main {
   max-width: 1200px;
   margin: auto;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(28, 37, 54, 0.85);
   border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 h1,
 h2,
 h3 {
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 /* 섹션별 카드 스타일 */
@@ -46,24 +47,24 @@ h3 {
 #semiconductor-stocks,
 #selected-stock-analysis,
 #monthly-recommendations {
-  background: linear-gradient(145deg, #ffffff, #f0f2f5);
+  background: #1c2536;
   border-radius: 15px;
   padding: 25px;
   margin-bottom: 25px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* NEW: 뉴스 기반 시기적 분석 스타일 */
 .news-seasonal-section {
-  background: linear-gradient(135deg, #ff9a56 0%, #ffc371 100%);
+  background: #1f2937;
   border-radius: 15px;
   padding: 25px;
   margin: 20px 0;
   color: white;
-  box-shadow: 0 8px 25px rgba(255, 154, 86, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
 .news-seasonal-section h4 {
@@ -112,7 +113,7 @@ h3 {
 
 .news-impact-section,
 .market-sentiment-section {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(10, 10, 10, 0.15);
   border-radius: 10px;
   padding: 15px;
   margin: 15px 0;
@@ -145,21 +146,21 @@ h3 {
 .news-sentiment.positive,
 .market-sentiment.positive {
   background: rgba(46, 204, 113, 0.3);
-  color: #27ae60;
+  color: #2eff7b;
   border: 1px solid rgba(46, 204, 113, 0.5);
 }
 
 .news-sentiment.negative,
 .market-sentiment.negative {
   background: rgba(231, 76, 60, 0.3);
-  color: #e74c3c;
+  color: #ff6b5a;
   border: 1px solid rgba(231, 76, 60, 0.5);
 }
 
 .news-sentiment.neutral,
 .market-sentiment.neutral {
   background: rgba(149, 165, 166, 0.3);
-  color: #95a5a6;
+  color: #bdc3c7;
   border: 1px solid rgba(149, 165, 166, 0.5);
 }
 
@@ -167,6 +168,7 @@ h3 {
 .market-confidence {
   font-size: 0.8em;
   opacity: 0.8;
+  color: #f0f0f0;
 }
 
 .key-factors,
@@ -199,16 +201,16 @@ h3 {
 }
 
 .theme-tag {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   padding: 4px 10px;
   border-radius: 15px;
   font-size: 0.8em;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ai-insights-section {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   padding: 15px;
   margin: 15px 0;
@@ -230,15 +232,16 @@ h3 {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 12px;
   border-radius: 8px;
-  border-left: 4px solid rgba(255, 255, 255, 0.3);
+  border-left: 4px solid rgba(255, 255, 255, 0.2);
 }
 
 .insight-icon {
   font-size: 1.2em;
   flex-shrink: 0;
+  color: #a7b5d3;
 }
 
 .insight-text {
@@ -262,25 +265,22 @@ h3 {
 /* TradingView 차트 특별 설정 */
 #tradingview-chart {
   height: 600px;
-  /* 고정 높이 설정 */
   min-height: 600px;
 }
 
 #tradingview-chart .tradingview-widget-container {
   height: 520px !important;
-  /* 패딩 고려한 실제 차트 높이 */
   width: 100% !important;
 }
 
 #tradingview_b4321 {
   height: 480px !important;
-  /* 저작권 텍스트 공간 확보 */
   width: 100% !important;
 }
 
 /* 섹션 설명 스타일 */
 .section-description {
-  color: #666;
+  color: #a9bce8;
   font-size: 14px;
   margin: -10px 0 20px 0;
   font-style: italic;
@@ -299,77 +299,71 @@ section h2 {
   font-weight: 600;
   font-size: 1.5em;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 /* 섹션 순서에 따른 강조 색상 */
 #tradingview-chart h2 {
-  color: #667eea;
+  color: #8a9ff9;
 }
 
 #selected-stock-analysis h2 {
-  color: #28a745;
+  color: #33c569;
 }
 
 #ai-stocks h2 {
-  color: #fd7e14;
+  color: #fd9a51;
 }
 
 #semiconductor-stocks h2 {
-  color: #6f42c1;
+  color: #a371f7;
 }
 
 #monthly-recommendations h2 {
-  color: #dc3545;
+  color: #f76e7c;
 }
 
 padding-bottom: 10px;
-border-bottom: 3px solid #667eea;
+border-bottom: 3px solid #8a9ff9;
 display: inline-block;
 }
 
 #analysis {
   display: block;
-  /* Changed from flex */
   margin-top: 20px;
 }
 
 #technical-analysis,
 #seasonal-analysis {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 25px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid #28a745;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border-left: 5px solid #33c569;
 }
 
 #technical-analysis h3,
 #seasonal-analysis h3 {
-  color: #28a745;
+  color: #33c569;
   font-weight: 600;
   margin-bottom: 20px;
 }
 
 #tradingview-chart {
   height: 75vh;
-  /* 60vh에서 75vh로 대폭 증가 */
   max-height: 800px;
-  /* 최대 높이도 대폭 증가 */
   overflow: hidden;
   position: relative;
   margin-top: 0;
-  /* 마진 제거 */
   padding: 10px;
-  /* 내부 여백 추가 */
+  background: #131722;
 }
 
-/* TradingView 위젯 컨테이너 높이 제한 */
 .tradingview-widget-container {
   height: 100% !important;
   max-height: 750px !important;
-  /* 더 높게 설정 */
   min-height: 500px !important;
-  /* 최소 높이 보장 */
 }
 
 .results-grid {
@@ -380,24 +374,25 @@ display: inline-block;
 }
 
 .analysis-result {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #2a354b;
   border: none;
   border-radius: 12px;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #8a9ff9;
 }
 
 .analysis-result:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
 }
 
 .analysis-result h4 {
   margin-top: 0;
   font-size: 1.1em;
+  color: #f0f0f0;
 }
 
 .signal {
@@ -411,41 +406,33 @@ display: inline-block;
 
 .signal-buy {
   background-color: #28a745;
-  /* Green */
 }
 
 .signal-sell {
   background-color: #dc3545;
-  /* Red */
 }
 
-/* Hold 신호 개선 - 더 잘 보이도록 */
 .signal:not(.signal-buy):not(.signal-sell) {
   background-color: #6c757d;
-  /* Gray background for Hold */
   color: #fff;
   border: 1px solid #495057;
 }
 
 .tooltip {
   position: absolute;
-  background-color: #333;
+  background-color: #2a2a2a;
   color: #fff;
   padding: 10px 14px;
   border-radius: 6px;
   font-size: 0.85em;
   z-index: 1000;
   pointer-events: none;
-  /* Allows clicks to pass through to elements below */
   opacity: 0;
-  /* Default hidden state */
   transition: opacity 0.3s ease-in-out;
-  /* Smooth transition */
   white-space: normal;
-  /* Allow text wrapping for longer descriptions */
   max-width: 300px;
   line-height: 1.4;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   border: 1px solid #555;
 }
 
@@ -455,30 +442,29 @@ display: inline-block;
   gap: 10px;
   margin-top: 15px;
   justify-content: center;
-  /* Center the stock tickers */
 }
 
 .stock-ticker {
-  background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  color: #1565c0;
+  background: #2c3e50;
+  color: #e0e0e0;
   padding: 10px 15px;
   border-radius: 25px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
   border: 2px solid transparent;
-  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .stock-ticker:hover {
-  background: linear-gradient(145deg, #bbdefb, #90caf9);
+  background: #465a75;
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(21, 101, 192, 0.3);
-  border-color: #1565c0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border-color: #8a9ff9;
 }
 
 #selected-stock-analysis {
-  background-color: #fff;
+  background-color: #1c2536;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -486,15 +472,15 @@ display: inline-block;
 
 #selected-stock-details {
   margin-top: 15px;
-  border: 1px solid #eee;
+  border: 1px solid #374151;
   padding: 15px;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #1f2937;
 }
 
 .stock-header {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #1f2937;
+  border: 1px solid #374151;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 15px;
@@ -503,7 +489,7 @@ display: inline-block;
 
 .stock-header h3 {
   margin: 0 0 10px 0;
-  color: #2c3e50;
+  color: #ffffff;
   font-size: 1.5em;
 }
 
@@ -518,7 +504,7 @@ display: inline-block;
 .stock-header .current-price {
   font-size: 1.8em;
   font-weight: bold;
-  color: #333;
+  color: #ffffff;
 }
 
 .stock-header .price-change {
@@ -530,21 +516,21 @@ display: inline-block;
 
 .stock-header .price-change.positive {
   color: #28a745;
-  background-color: #d4edda;
+  background-color: rgba(40, 167, 69, 0.2);
 }
 
 .stock-header .price-change.negative {
   color: #dc3545;
-  background-color: #f8d7da;
+  background-color: rgba(220, 53, 69, 0.2);
 }
 
 .stock-fundamentals {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border: none;
   border-radius: 15px;
   padding: 25px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   border-left: 4px solid #17a2b8;
 }
 
@@ -556,18 +542,18 @@ display: inline-block;
 }
 
 .fundamental-item {
-  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  background: #2a354b;
   padding: 15px;
   border-radius: 10px;
   text-align: center;
   transition: transform 0.2s ease;
-  border: 1px solid rgba(23, 162, 184, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(23, 162, 184, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .fundamental-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(23, 162, 184, 0.15);
+  box-shadow: 0 6px 15px rgba(23, 162, 184, 0.3);
 }
 
 .fundamental-item .label {
@@ -582,12 +568,12 @@ display: inline-block;
 .fundamental-item .value {
   font-size: 1.2em;
   font-weight: bold;
-  color: #2c3e50;
+  color: #e0e0e0;
 }
 
 .stock-description {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #1f2937;
+  border: 1px solid #374151;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 15px;
@@ -595,42 +581,43 @@ display: inline-block;
 
 .stock-description h4 {
   margin-top: 0;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .stock-description p {
   line-height: 1.6;
-  color: #555;
+  color: #b0b8c5;
 }
 
 .stock-ticker.selected {
-  background: linear-gradient(145deg, #667eea, #764ba2);
+  background: linear-gradient(145deg, #8a9ff9, #667eea);
   color: white;
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
-  border-color: #667eea;
+  border-color: #8a9ff9;
 }
 
 /* Tooltip term styling */
 .tooltip-term {
   cursor: help;
-  border-bottom: 1px dotted #666;
+  border-bottom: 1px dotted #8a9ff9;
   position: relative;
+  color: #8a9ff9;
 }
 
 .tooltip-term:hover {
-  color: #007bff;
-  border-bottom-color: #007bff;
+  color: #a9bce8;
+  border-bottom-color: #a9bce8;
 }
 
 /* 상세 분석 스타일 */
 .score-item-detailed {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #667eea;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-left: 4px solid #8a9ff9;
 }
 
 .score-header {
@@ -642,14 +629,14 @@ display: inline-block;
 
 .score-header .score-label {
   font-weight: 600;
-  color: #2c3e50;
+  color: #e0e0e0;
   font-size: 1.1em;
 }
 
 .score-header .score-bar {
   flex: 1;
   height: 12px;
-  background-color: #e9ecef;
+  background-color: #2a354b;
   border-radius: 6px;
   margin: 0 15px;
   overflow: hidden;
@@ -669,13 +656,13 @@ display: inline-block;
 
 .score-header .score-value {
   font-weight: bold;
-  color: #495057;
+  color: #e0e0e0;
   min-width: 40px;
   text-align: right;
 }
 
 .score-details {
-  background-color: #f8f9fa;
+  background-color: #2a354b;
   padding: 15px;
   border-radius: 8px;
   border-left: 3px solid #6c757d;
@@ -685,46 +672,46 @@ display: inline-block;
   margin: 8px 0;
   line-height: 1.5;
   font-size: 0.95em;
-  color: #495057;
+  color: #b0b8c5;
 }
 
 .score-details strong {
-  color: #2c3e50;
+  color: #e0e0e0;
   font-weight: 600;
 }
 
 /* 기존 스타일 개선 */
 .analysis-section {
   margin-bottom: 25px;
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border-radius: 15px;
   padding: 25px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #28a745;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-left: 4px solid #33c569;
 }
 
 .analysis-section h4 {
-  color: #28a745;
+  color: #33c569;
   margin-bottom: 20px;
   font-weight: 600;
-  border-bottom: 2px solid #28a745;
+  border-bottom: 2px solid #33c569;
   padding-bottom: 8px;
 }
 
 .score-section {
   margin-bottom: 25px;
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border-radius: 15px;
   padding: 25px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #667eea;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-left: 4px solid #8a9ff9;
 }
 
 .score-section h4 {
-  color: #667eea;
+  color: #8a9ff9;
   margin-bottom: 20px;
   font-weight: 600;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #8a9ff9;
   padding-bottom: 8px;
 }
 
@@ -732,7 +719,7 @@ display: inline-block;
   text-align: center;
   margin-bottom: 25px;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #8a9ff9, #667eea);
   color: white;
   border-radius: 12px;
 }
@@ -752,29 +739,29 @@ display: inline-block;
   font-weight: 600;
   margin-top: 10px;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 25px;
   display: inline-block;
 }
 
 /* AI 추천 섹션 스타일 추가 */
 #monthly-recommendations {
-  background: linear-gradient(145deg, #ffffff, #f0f2f5);
+  background: #1c2536;
   border-radius: 15px;
   padding: 25px;
   margin-bottom: 25px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #monthly-recommendations h2 {
-  color: #667eea;
+  color: #8a9ff9;
   font-weight: 600;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 3px solid #667eea;
+  border-bottom: 3px solid #8a9ff9;
   display: inline-block;
 }
 
@@ -809,9 +796,10 @@ display: inline-block;
 
 #sector-filter {
   padding: 8px 12px;
-  border: 2px solid #e9ecef;
+  border: 2px solid #374151;
   border-radius: 20px;
-  background: white;
+  background: #1f2937;
+  color: #e0e0e0;
   font-size: 0.9em;
   cursor: pointer;
 }
@@ -825,15 +813,15 @@ display: inline-block;
 
 .sentiment-card,
 .strategy-card {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sentiment-card h3,
 .strategy-card h3 {
-  color: #495057;
+  color: #e0e0e0;
   margin-bottom: 15px;
   font-size: 1.1em;
   font-weight: 600;
@@ -847,17 +835,17 @@ display: inline-block;
 }
 
 .recommendation-card {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #1f2937;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-left: 4px solid #007bff;
 }
 
 .recommendation-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
 }
 
 .card-header {
@@ -868,7 +856,7 @@ display: inline-block;
 }
 
 .rank-badge {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #8a9ff9, #667eea);
   color: white;
   border-radius: 50%;
   width: 30px;
@@ -883,7 +871,7 @@ display: inline-block;
 .ticker-name {
   font-weight: bold;
   font-size: 1.2em;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .recommendation-badge {
@@ -924,14 +912,14 @@ display: inline-block;
 
 .score-label {
   font-size: 0.9em;
-  color: #6c757d;
+  color: #b0b8c5;
   display: block;
 }
 
 .score-value {
   font-size: 1.3em;
   font-weight: bold;
-  color: #2c3e50;
+  color: #e0e0e0;
 }
 
 .score-breakdown {
@@ -947,14 +935,14 @@ display: inline-block;
 
 .score-item .tooltip-term {
   font-size: 0.8em;
-  color: #6c757d;
+  color: #b0b8c5;
   display: block;
   margin-bottom: 2px;
 }
 
 .score-item .score {
   font-weight: bold;
-  color: #495057;
+  color: #e0e0e0;
 }
 
 .reasons-section {
@@ -963,7 +951,7 @@ display: inline-block;
 
 .reasons-title {
   font-size: 0.9em;
-  color: #6c757d;
+  color: #b0b8c5;
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -975,8 +963,8 @@ display: inline-block;
 }
 
 .reason-tag {
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: #374151;
+  color: #e0e0e0;
   padding: 3px 8px;
   border-radius: 12px;
   font-size: 0.75em;
@@ -986,7 +974,7 @@ display: inline-block;
 .card-footer {
   text-align: center;
   padding-top: 15px;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid #374151;
 }
 
 .btn-detail {
@@ -1011,7 +999,7 @@ display: inline-block;
 }
 
 .technical-summary {
-  background-color: #f8f9fa;
+  background-color: #1f2937;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -1077,8 +1065,8 @@ display: inline-block;
 }
 
 .indicator-item {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
+  background-color: #2a354b;
+  border: 1px solid #374151;
   border-radius: 6px;
   padding: 12px;
   text-align: center;
@@ -1087,7 +1075,7 @@ display: inline-block;
 .indicator-item .label {
   display: block;
   font-size: 0.85em;
-  color: #6c757d;
+  color: #b0b8c5;
   margin-bottom: 5px;
   font-weight: 500;
 }
@@ -1096,19 +1084,19 @@ display: inline-block;
   display: block;
   font-size: 1.1em;
   font-weight: bold;
-  color: #495057;
+  color: #e0e0e0;
 }
 
 .bollinger-section {
   margin: 20px 0;
   padding: 15px;
-  background-color: #e9ecef;
+  background-color: #2a354b;
   border-radius: 6px;
 }
 
 .bollinger-section h5 {
   margin: 0 0 15px 0;
-  color: #495057;
+  color: #e0e0e0;
 }
 
 .bollinger-grid {
@@ -1118,28 +1106,28 @@ display: inline-block;
 }
 
 .bollinger-item {
-  background-color: #fff;
+  background-color: #1f2937;
   padding: 10px;
   border-radius: 4px;
   text-align: center;
-  border: 1px solid #ced4da;
+  border: 1px solid #374151;
 }
 
 .bollinger-item .label {
   display: block;
   font-size: 0.8em;
-  color: #6c757d;
+  color: #b0b8c5;
   margin-bottom: 3px;
 }
 
 .bollinger-item .value {
   display: block;
   font-weight: bold;
-  color: #495057;
+  color: #e0e0e0;
 }
 
 .signals-section {
-  background-color: #fff3cd;
+  background-color: rgba(255, 193, 7, 0.1);
   padding: 15px;
   border-radius: 6px;
   border-left: 4px solid #ffc107;
@@ -1148,7 +1136,7 @@ display: inline-block;
 
 .signals-section h5 {
   margin: 0 0 10px 0;
-  color: #856404;
+  color: #ffc107;
 }
 
 .signals-list {
@@ -1159,20 +1147,20 @@ display: inline-block;
 
 .signals-list li {
   padding: 5px 0;
-  color: #856404;
+  color: #ffe082;
   font-size: 0.9em;
   line-height: 1.4;
 }
 
 .analysis-conclusion {
-  background-color: #d1ecf1;
+  background-color: rgba(23, 162, 184, 0.1);
   padding: 15px;
   border-radius: 6px;
   border-left: 4px solid #17a2b8;
   margin-top: 20px;
   font-size: 0.95em;
   line-height: 1.5;
-  color: #0c5460;
+  color: #88d9e8;
 }
 
 /* ===== TOOLTIP STYLES ===== */
@@ -1223,8 +1211,8 @@ display: inline-block;
 
 /* 캐시 알림 스타일 */
 .cache-notification {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  border: 1px solid #90caf9;
+  background: linear-gradient(135deg, #4a4e69, #2a2a3e);
+  border: 1px solid #9a8c98;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
@@ -1242,15 +1230,16 @@ display: inline-block;
 
 .notification-icon {
   font-size: 16px;
+  color: #c9ada7;
 }
 
 .notification-text {
   flex: 1;
-  color: #1565c0;
+  color: #f2e9e4;
 }
 
 .refresh-btn {
-  background: #2196f3;
+  background: #9a8c98;
   color: white;
   border: none;
   border-radius: 4px;
@@ -1261,20 +1250,20 @@ display: inline-block;
 }
 
 .refresh-btn:hover {
-  background: #1976d2;
+  background: #c9ada7;
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #666;
+  color: #c9ada7;
   cursor: pointer;
   font-size: 16px;
   padding: 0 4px;
 }
 
 .close-btn:hover {
-  color: #333;
+  color: #f2e9e4;
 }
 
 @keyframes slideDown {
@@ -1302,16 +1291,16 @@ display: inline-block;
 
 /* 뉴스 섹션 스타일 - 가독성 개선 */
 .news-seasonal-section {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: #1f2937;
+  border: 1px solid #374151;
   border-radius: 12px;
   padding: 20px;
   margin: 20px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .news-seasonal-section h4 {
-  color: #2c3e50;
+  color: #e0e0e0;
   margin-bottom: 16px;
   font-weight: 600;
 }
@@ -1347,14 +1336,14 @@ display: inline-block;
 .confidence-indicator {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   padding: 4px 12px;
   border-radius: 16px;
   display: inline-block;
 }
 
 .news-analysis-summary {
-  background: #f8f9fa;
+  background: #2a354b;
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -1362,7 +1351,7 @@ display: inline-block;
 }
 
 .news-analysis-summary h5 {
-  color: #2c3e50;
+  color: #e0e0e0;
   margin-bottom: 12px;
   font-weight: 600;
 }
@@ -1374,26 +1363,26 @@ display: inline-block;
 }
 
 .stat-item {
-  background: white;
+  background: #1f2937;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 13px;
-  border: 1px solid #dee2e6;
-  color: #495057;
+  border: 1px solid #374151;
+  color: #b0b8c5;
   font-weight: 500;
 }
 
 .related-news-section,
 .market-news-section {
   margin: 20px 0;
-  background: #fafafa;
+  background: #1f2937;
   padding: 16px;
   border-radius: 8px;
 }
 
 .related-news-section h5,
 .market-news-section h5 {
-  color: #2c3e50;
+  color: #e0e0e0;
   margin-bottom: 12px;
   font-weight: 600;
   border-bottom: 2px solid #ff9800;
@@ -1402,25 +1391,25 @@ display: inline-block;
 
 /* 뉴스 영향 분석 전체 스타일 개선 */
 .news-impact-section {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: #1f2937;
   padding: 24px;
   border-radius: 16px;
   margin: 24px 0;
-  border: 2px solid #e3f2fd;
-  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.1);
+  border: 2px solid #374151;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .news-impact-section h5 {
-  color: #1565c0;
+  color: #82aaff;
   margin-bottom: 20px;
   font-weight: 700;
   font-size: 18px;
-  border-bottom: 3px solid #2196f3;
+  border-bottom: 3px solid #82aaff;
   padding-bottom: 12px;
-  background: linear-gradient(90deg, #1565c0, #2196f3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .news-impact-summary {
@@ -1430,9 +1419,9 @@ display: inline-block;
   flex-wrap: wrap;
   margin-bottom: 20px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.8);
+  background: #2a354b;
   border-radius: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #374151;
 }
 
 .news-sentiment {
@@ -1478,34 +1467,34 @@ display: inline-block;
 
 .news-confidence,
 .news-impact-score {
-  background: linear-gradient(135deg, #ffffff, #f5f5f5);
+  background: #2a354b;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 14px;
-  color: #1565c0;
-  border: 2px solid #e3f2fd;
+  color: #82aaff;
+  border: 2px solid #374151;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
 .news-confidence:hover,
 .news-impact-score:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 4px 12px rgba(130, 170, 255, 0.2);
 }
 
 .key-factors {
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  background: #2a354b;
   padding: 20px;
   border-radius: 12px;
   margin-top: 16px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #374151;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .key-factors h6 {
-  color: #1565c0;
+  color: #82aaff;
   margin-bottom: 12px;
   font-weight: 700;
   font-size: 16px;
@@ -1519,7 +1508,7 @@ display: inline-block;
 
 .key-factors li {
   padding: 8px 0;
-  color: #2c3e50;
+  color: #b0b8c5;
   position: relative;
   padding-left: 28px;
   line-height: 1.5;
@@ -1527,7 +1516,7 @@ display: inline-block;
 }
 
 .key-factors li:hover {
-  color: #1565c0;
+  color: #82aaff;
 }
 
 .key-factors li::before {
@@ -1535,7 +1524,7 @@ display: inline-block;
   position: absolute;
   left: 0;
   top: 8px;
-  color: #2196f3;
+  color: #82aaff;
   font-size: 14px;
   transition: transform 0.3s ease;
 }
@@ -1545,15 +1534,15 @@ display: inline-block;
 }
 
 .ai-insights-section {
-  background: #e3f2fd;
+  background: #2a354b;
   padding: 16px;
   border-radius: 8px;
   margin: 16px 0;
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid #82aaff;
 }
 
 .ai-insights-section h5 {
-  color: #1565c0;
+  color: #82aaff;
   margin-bottom: 12px;
   font-weight: 600;
 }
@@ -1569,19 +1558,20 @@ display: inline-block;
   align-items: flex-start;
   gap: 8px;
   padding: 8px;
-  background: white;
+  background: #1f2937;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #374151;
 }
 
 .insight-icon {
   font-size: 16px;
   margin-top: 2px;
+  color: #82aaff;
 }
 
 .insight-text {
   flex: 1;
-  color: #2c3e50;
+  color: #b0b8c5;
   line-height: 1.4;
 }
 
@@ -1589,8 +1579,8 @@ display: inline-block;
   text-align: center;
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #e0e0e0;
-  color: #666;
+  border-top: 1px solid #374151;
+  color: #6c757d;
   font-size: 12px;
 }
 
@@ -1601,15 +1591,15 @@ display: inline-block;
 }
 
 .news-item {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: #2a354b;
+  border: 1px solid #374151;
   border-radius: 8px;
   padding: 12px;
   transition: box-shadow 0.2s ease;
 }
 
 .news-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .news-header {
@@ -1629,30 +1619,30 @@ display: inline-block;
 }
 
 .news-sentiment.positive {
-  background: #e8f5e8;
-  color: #2e7d32;
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
 }
 
 .news-sentiment.negative {
-  background: #ffebee;
-  color: #c62828;
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
 }
 
 .news-sentiment.neutral {
-  background: #f5f5f5;
-  color: #666;
+  background: rgba(108, 117, 125, 0.2);
+  color: #6c757d;
 }
 
 .news-source {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: #374151;
+  color: #82aaff;
   padding: 2px 6px;
   border-radius: 8px;
   font-weight: 500;
 }
 
 .news-time {
-  color: #666;
+  color: #6c757d;
   font-style: italic;
 }
 
@@ -1663,18 +1653,18 @@ display: inline-block;
 }
 
 .news-title a {
-  color: #1976d2;
+  color: #82aaff;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .news-title a:hover {
-  color: #1565c0;
+  color: #a9bce8;
   text-decoration: underline;
 }
 
 .news-summary {
-  color: #555;
+  color: #b0b8c5;
   font-size: 13px;
   line-height: 1.4;
   display: -webkit-box;
@@ -1684,8 +1674,8 @@ display: inline-block;
 }
 
 .news-impact-score {
-  background: #fff3e0;
-  color: #f57c00;
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
   padding: 2px 8px;
   border-radius: 12px;
   font-weight: 500;
@@ -1713,8 +1703,8 @@ display: inline-block;
 
 /* 추천 카드 선택 및 최고 점수 스타일 */
 .recommendation-card.selected {
-  border: 2px solid #2196f3;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  border: 2px solid #82aaff;
+  box-shadow: 0 4px 12px rgba(130, 170, 255, 0.3);
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
@@ -1742,13 +1732,13 @@ display: inline-block;
   text-align: center;
   margin: 20px 0;
   padding: 16px;
-  background: #f8f9fa;
+  background: #2a354b;
   border-radius: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #374151;
 }
 
 .signals-section h5 {
-  color: #2c3e50;
+  color: #e0e0e0;
   font-weight: 600;
   margin-bottom: 16px;
   text-align: center;
@@ -1765,20 +1755,20 @@ display: inline-block;
   display: inline-block;
   margin: 8px 12px;
   padding: 8px 16px;
-  background: white;
-  border: 1px solid #dee2e6;
+  background: #1f2937;
+  border: 1px solid #374151;
   border-radius: 20px;
-  color: #495057;
+  color: #b0b8c5;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 .signals-list li:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  background: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background: #2a354b;
 }
 
 /* 기술적 분석 전체 스타일도 개선 */
@@ -1805,21 +1795,21 @@ display: inline-block;
   text-align: center;
   margin: 20px 0;
   padding: 16px;
-  background: #f0f8ff;
+  background: #2a354b;
   border-radius: 12px;
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid #82aaff;
 }
 
 .analysis-summary p {
   margin: 0;
-  color: #2c3e50;
+  color: #b0b8c5;
   line-height: 1.6;
 }
 
 #selected-stock-header h2,
 #selected-stock-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: #ffffff;
   font-weight: 600;
   font-size: 24px;
   text-align: center;
@@ -1836,7 +1826,7 @@ display: inline-block;
 .current-price {
   font-size: 20px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .price-change {
@@ -1848,12 +1838,12 @@ display: inline-block;
 
 .price-change.positive {
   color: #27ae60;
-  background: rgba(39, 174, 96, 0.1);
+  background: rgba(39, 174, 96, 0.2);
 }
 
 .price-change.negative {
   color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
+  background: rgba(231, 76, 60, 0.2);
 }
 
 @keyframes pulse {
@@ -1874,14 +1864,14 @@ display: inline-block;
 .ai-model-info {
   margin-top: 10px;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: #2a354b;
   border-radius: 8px;
   border-left: 4px solid #6c757d;
   font-family: 'Consolas', 'Monaco', monospace;
 }
 
 .ai-model-info small {
-  color: #495057;
+  color: #b0b8c5;
   font-size: 11px;
   font-weight: 500;
   display: flex;
@@ -1891,7 +1881,7 @@ display: inline-block;
 
 /* 뉴스 링크 스타일 개선 */
 .news-title a {
-  color: #2c3e50;
+  color: #82aaff;
   text-decoration: none;
   font-weight: 600;
   border-bottom: 1px solid transparent;
@@ -1899,18 +1889,18 @@ display: inline-block;
 }
 
 .news-title a:hover {
-  color: #3498db;
-  border-bottom-color: #3498db;
+  color: #a9bce8;
+  border-bottom-color: #a9bce8;
   text-decoration: none;
 }
 
 .news-title a:visited {
-  color: #8e44ad;
+  color: #c5aeff;
 }
 
 /* 캐시 알림 스타일 개선 */
 .cache-notification {
-  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
   border: 1px solid #e17055;
   border-radius: 8px;
   padding: 12px 16px;
@@ -1985,15 +1975,15 @@ display: inline-block;
 }
 
 .tooltip-term {
-  color: #3498db;
+  color: #82aaff;
   cursor: help;
-  border-bottom: 1px dotted #3498db;
+  border-bottom: 1px dotted #82aaff;
   position: relative;
   display: inline;
   transition: all 0.3s ease;
 }
 
 .tooltip-term:hover {
-  color: #2980b9;
-  border-bottom-color: #2980b9;
+  color: #a9bce8;
+  border-bottom-color: #a9bce8;
 }

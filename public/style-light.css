@@ -1,0 +1,354 @@
+/* Light Mode Styles */
+
+/* General Body and Text */
+body.light-mode {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf2 100%);
+  color: #333;
+}
+
+body.light-mode header {
+  background: #ffffff;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode header h1 {
+  color: #2c3e50;
+  text-shadow: none;
+}
+
+body.light-mode main {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6 {
+  color: #2c3e50;
+}
+
+/* Sections and Cards */
+body.light-mode #tradingview-chart,
+body.light-mode #ai-stocks,
+body.light-mode #semiconductor-stocks,
+body.light-mode #selected-stock-analysis,
+body.light-mode #monthly-recommendations,
+body.light-mode .news-seasonal-section,
+body.light-mode #technical-analysis,
+body.light-mode #seasonal-analysis,
+body.light-mode .analysis-section,
+body.light-mode .score-section {
+  background: #ffffff;
+  border: 1px solid #e0e4e8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode #tradingview-chart {
+  background: #fdfdfd;
+}
+
+body.light-mode .stock-header,
+body.light-mode .stock-fundamentals,
+body.light-mode .stock-description,
+body.light-mode #selected-stock-details,
+body.light-mode .seasonal-card,
+body.light-mode .chart-container,
+body.light-mode .analysis-result,
+body.light-mode .fundamental-item,
+body.light-mode .score-item-detailed,
+body.light-mode .technical-summary,
+body.light-mode .indicator-item,
+body.light-mode .bollinger-section,
+body.light-mode .bollinger-item,
+body.light-mode .analysis-summary,
+body.light-mode .ai-model-info {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+body.light-mode .stock-header h3,
+body.light-mode .stock-header .current-price {
+  color: #2c3e50;
+}
+
+body.light-mode .fundamental-item .value,
+body.light-mode .indicator-item .value,
+body.light-mode .bollinger-item .value {
+  color: #333;
+}
+
+body.light-mode .stock-description p,
+body.light-mode .month-detail,
+body.light-mode .analysis-subtitle {
+  color: #555;
+}
+
+/* Tickers and Buttons */
+body.light-mode .stock-ticker {
+  background: #e9ecef;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-color: transparent;
+}
+
+body.light-mode .stock-ticker:hover {
+  background: #dce1e6;
+  border-color: #007bff;
+}
+
+body.light-mode .stock-ticker.selected {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+body.light-mode .btn-refresh {
+  background: #28a745;
+}
+body.light-mode .btn-refresh:hover {
+  background: #218838;
+}
+
+body.light-mode .btn-detail {
+  background: #007bff;
+}
+body.light-mode .btn-detail:hover {
+  background: #0056b3;
+}
+
+/* Recommendation System */
+body.light-mode #monthly-recommendations {
+  background: #f8f9fa;
+}
+
+body.light-mode .recommendation-header {
+  border-bottom: 2px solid #dee2e6;
+}
+
+body.light-mode .sentiment-card,
+body.light-mode .strategy-card,
+body.light-mode .recommendation-card {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .card-header,
+body.light-mode .card-footer {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+body.light-mode .ticker-name,
+body.light-mode .sentiment-card h3,
+body.light-mode .strategy-card h3 {
+  color: #2c3e50;
+}
+
+body.light-mode #sector-filter {
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #ced4da;
+}
+
+body.light-mode .strategy-text,
+body.light-mode .sentiment-recommendation,
+body.light-mode .risk-label {
+  color: #555;
+}
+
+body.light-mode .score-label,
+body.light-mode .reasons-title,
+body.light-mode .score-item .tooltip-term {
+  color: #6c757d;
+}
+
+body.light-mode .reason-tag {
+  background: #e9ecef;
+  color: #333;
+}
+
+body.light-mode .score-item {
+  background: #f8f9fa;
+}
+
+/* Modals */
+body.light-mode .modal-content {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+}
+
+body.light-mode .modal-header {
+  border-bottom: 1px solid #dee2e6;
+}
+
+body.light-mode .modal-header h3 {
+  color: #2c3e50;
+}
+
+body.light-mode .modal-close {
+  color: #6c757d;
+}
+
+body.light-mode .score-bar {
+  background: #e9ecef;
+}
+
+/* News Section */
+body.light-mode .news-seasonal-section,
+body.light-mode .related-news-section,
+body.light-mode .market-news-section,
+body.light-mode .news-impact-section,
+body.light-mode .key-factors,
+body.light-mode .ai-insights-section,
+body.light-mode .news-item,
+body.light-mode .news-analysis-summary {
+  background: #ffffff;
+  border-color: #e9ecef;
+}
+
+body.light-mode .news-impact-section h5,
+body.light-mode .key-factors h6,
+body.light-mode .ai-insights-section h5 {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+body.light-mode .news-impact-summary,
+body.light-mode .stat-item {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+  color: #555;
+}
+
+body.light-mode .key-factors li {
+  color: #555;
+}
+body.light-mode .key-factors li:hover {
+  color: #007bff;
+}
+body.light-mode .key-factors li::before {
+  color: #007bff;
+}
+
+body.light-mode .insight-text,
+body.light-mode .news-summary,
+body.light-mode .last-updated small {
+  color: #555;
+}
+
+body.light-mode .news-title a {
+  color: #0056b3;
+}
+body.light-mode .news-title a:visited {
+  color: #4a007a;
+}
+
+body.light-mode .news-source {
+  background: #e9ecef;
+  color: #007bff;
+}
+
+/* Tooltips */
+body.light-mode .tooltip {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+body.light-mode .tooltip::before {
+  border-bottom-color: #ccc;
+}
+
+body.light-mode .tooltip-term,
+body.light-mode .tooltip-term[data-term] {
+  color: #0056b3;
+  border-bottom-color: #0056b3;
+}
+
+/* Cache Notification */
+body.light-mode .cache-notification {
+  background: #e6f7ff;
+  border-color: #91d5ff;
+}
+body.light-mode .notification-text {
+  color: #333;
+}
+body.light-mode .refresh-btn {
+  background: #1890ff;
+  color: white;
+}
+body.light-mode .close-btn {
+  color: #555;
+}
+
+/* Theme Toggle Switch */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.theme-switch-wrapper em {
+  font-size: 0.9rem;
+  font-style: normal;
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #4d566b;
+  transition: .4s;
+  border-radius: 26px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #007bff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Light mode specific toggle color */
+body.light-mode .theme-switch-wrapper em {
+    color: #2c3e50;
+}
